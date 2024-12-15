@@ -4,37 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin and Customer Pages</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        img {
-            max-width: 100px;
-        }
-        .history {
-            background: #f9f9f9;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .admin-container {
-            display: none;
-        }
-        .btn-login {
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
-
 
 <div class="admin-container" id="admin-container">
     <h1>Admin Page</h1>
@@ -51,8 +22,8 @@
     <h2>Items</h2>
     <div id="admin-items"></div>
 
-    <h2>History</h2>
-    <div id="admin-history"></div>
+    <!-- Button to download items as JSON -->
+    <button onclick="downloadItems()">Download Items as JSON</button>
 </div>
 
 <script>
@@ -82,10 +53,9 @@
         return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
     }
 
-    // Function to update the admin and history pages
+    // Function to update the admin page
     function updatePages(items) {
         const adminContainer = document.getElementById('admin-items');
-        const historyContainer = document.getElementById('admin-history');
 
         if (adminContainer) {
             adminContainer.innerHTML = '';
@@ -100,12 +70,6 @@
                 `;
                 adminContainer.appendChild(adminItem);
             });
-        }
-
-        if (historyContainer) {
-            historyContainer.innerHTML = items
-                .map(item => `<div class="history">Updated: <strong>${item.name}</strong> - Quantity: ${item.quantity}</div>`)
-                .join('');
         }
     }
 
@@ -148,6 +112,21 @@
         items.splice(index, 1);
         saveToCookies(items);
         updatePages(items);
+    }
+
+    // Function to download items as a JSON file
+    function downloadItems() {
+        const items = loadFromCookies();
+        const jsonData = JSON.stringify(items, null, 2);
+
+        // Create a Blob from the JSON string
+        const blob = new Blob([jsonData], { type: 'application/json' });
+
+        // Create a link to download the Blob
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'items.json';  // Name of the file to download
+        link.click();
     }
 
     // Load the admin page if already authenticated
