@@ -7,13 +7,22 @@ exports.handler = async function(event, context) {
         connectionString: connectionString,
     });
 
-    await client.connect();
+    try {
+        await client.connect();
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Error connecting to database: ' + error.message }),
+        };
+    }
 
     if (event.httpMethod === 'GET') {
         const query = 'SELECT * FROM items';
 
         try {
             const res = await client.query(query);
+            console.log(res.rows);  // Log the query result to debug
+
             await client.end();
             return {
                 statusCode: 200,
@@ -23,7 +32,7 @@ exports.handler = async function(event, context) {
             await client.end();
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: 'Error fetching items' }),
+                body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
             };
         }
     }
