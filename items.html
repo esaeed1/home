@@ -6,18 +6,30 @@
     <title>Items - Home & Labor Supplies</title>
     <link rel="stylesheet" href="css/style1.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
         }
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
+        .item-card {
             border: 1px solid #ccc;
-            white-space: pre-wrap;       /* Allows long lines to break */
-            word-wrap: break-word;      /* Prevents overflow */
+            padding: 10px;
+            text-align: center;
+        }
+        .item-card img {
             max-width: 100%;
-            word-break: break-word;
+            height: auto;
+        }
+        .item-card h3 {
+            margin: 10px 0;
+        }
+        .item-card p {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .item-card a {
+            text-decoration: none;
+            color: #007bff;
         }
     </style>
 </head>
@@ -35,41 +47,45 @@
 <main>
     <section>
         <h2>Our Items</h2>
-        <pre id="item-data">Loading items...</pre> <!-- The items will be displayed here -->
+        <div class="item-grid" id="item-grid">
+            <!-- Dynamic Item Cards will be populated here -->
+        </div>
     </section>
 </main>
 
 <footer>
-    <p>&copy; 2020 Home & Labor Supplies. All rights reserved.</p>
+    <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
 </footer>
 
 <script>
-    // Function to fetch items from the database via the API
-    function fetchItems() {
-        fetch('/.netlify/functions/getItems')
-            .then(response => response.json())
-            .then(items => {
-                console.log('Fetched items:', items); // Log the response to check the structure
-
-                const itemData = document.getElementById('item-data');
-
-                // Check if items are returned and are in the correct format
-                if (Array.isArray(items) && items.length > 0) {
-                    itemData.textContent = JSON.stringify(items, null, 2); // Display as pretty-printed JSON
-                } else {
-                    itemData.textContent = 'No items found or invalid response.';
-                    console.error('No items found or invalid response:', items);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching items:', error);
-                document.getElementById('item-data').textContent = 'Failed to load items.';
-            });
+    // Function to load items from cookies
+    function loadFromCookies() {
+        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
+        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
     }
 
-    // Call fetchItems when the page loads
-    document.addEventListener('DOMContentLoaded', fetchItems);
-</script>
+    // Function to update the item display on the page
+    function updateItems() {
+        const items = loadFromCookies();
+        const itemGrid = document.getElementById('item-grid');
 
+        itemGrid.innerHTML = '';  // Clear current items
+
+        items.forEach(item => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card';
+            itemCard.innerHTML = `
+                <img src="${item.img}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>Quantity: ${item.quantity}</p>
+                <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
+            `;
+            itemGrid.appendChild(itemCard);
+        });
+    }
+
+    // Call updateItems when the page loads to display current items
+    document.addEventListener('DOMContentLoaded', updateItems);
+</script>
 </body>
 </html>
