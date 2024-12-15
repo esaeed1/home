@@ -52,6 +52,8 @@
 <div class="admin-container" id="admin-container">
     <h1>Admin Page</h1>
     <div>
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" placeholder="Enter Item Name">
         <label for="upc">UPC Code:</label>
         <input type="text" id="upc" placeholder="Enter UPC Code">
         <label for="quantity">Quantity:</label>
@@ -81,7 +83,7 @@
         }
     }
 
-    // Function to fetch item data from Home Depot
+    // Function to fetch item data from Home Depot (for name, img, and link)
     function getItemData(upc) {
         const url = `https://www.homedepot.com/s/${upc}`;
         return fetch(url)
@@ -118,11 +120,11 @@
                 const adminItem = document.createElement('div');
                 adminItem.className = 'item';
                 adminItem.innerHTML = `
-                        <img src="${item.img}" alt="${item.name}">
-                        <p><strong><a href="${item.link}" target="_blank">${item.name}</a></strong></p>
-                        <p>Quantity: <input type="number" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)"></p>
-                        <button onclick="deleteItem(${index})">Delete Item</button>
-                    `;
+                    <img src="${item.img}" alt="${item.name}">
+                    <p><strong><a href="${item.link}" target="_blank">${item.name}</a></strong></p>
+                    <p>Quantity: <input type="number" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)"></p>
+                    <button onclick="deleteItem(${index})">Delete Item</button>
+                `;
                 adminContainer.appendChild(adminItem);
             });
         }
@@ -136,17 +138,20 @@
 
     // Function to add a new item
     function addItem() {
+        const name = document.getElementById('name').value;  // New field for item name
         const upc = document.getElementById('upc').value;
         const quantity = document.getElementById('quantity').value;
-        if (!upc || !quantity) {
-            alert('Please enter both UPC code and quantity.');
+
+        if (!name || !upc || !quantity) {
+            alert('Please enter the item name, UPC code, and quantity.');
             return;
         }
 
+        // Use the manually entered name or fetch data from Home Depot if not entered
         getItemData(upc).then(itemData => {
             const items = loadFromCookies();
             items.push({
-                name: itemData.name,
+                name: name || itemData.name,  // If name is provided, use it; otherwise, use the fetched name
                 img: itemData.img,
                 quantity: parseInt(quantity, 10),
                 link: itemData.link
