@@ -37,7 +37,7 @@
 <header>
     <h1>Home & Labor Supplies</h1>
     <nav>
-        <a href="index.html">Home</a>
+        <a href="index.html">Home11</a>
         <a href="contact.html">Contact</a>
         <a href="items.html">Items</a>
         <a href="social.html">Social</a>
@@ -59,14 +59,15 @@
 
 <script>
     // Function to fetch items from the database via the API
+    // Function to fetch items from the database via the API
     function fetchItems() {
         fetch('/.netlify/functions/getItems')
             .then(response => response.json())
             .then(items => {
                 console.log('Fetched items:', items); // Log the response to check the structure
 
-                // Check if items is an array
-                if (Array.isArray(items)) {
+                // Check if items is an array and not empty
+                if (Array.isArray(items) && items.length > 0) {
                     const itemGrid = document.getElementById('item-grid');
                     itemGrid.innerHTML = '';  // Clear current items
 
@@ -82,8 +83,8 @@
                         itemGrid.appendChild(itemCard);
                     });
                 } else {
-                    console.error('Expected an array but got:', items);
-                    alert('Failed to load items: The response is not in the correct format.');
+                    console.error('No items found or received an invalid response:', items);
+                    alert('Failed to load items: No items available.');
                 }
             })
             .catch(error => {
@@ -91,6 +92,10 @@
                 alert('Failed to load items.');
             });
     }
+
+    // Call fetchItems when the page loads to display current items
+    document.addEventListener('DOMContentLoaded', fetchItems);
+
 
 
     // Call fetchItems when the page loads to display current items

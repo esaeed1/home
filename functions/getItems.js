@@ -12,9 +12,10 @@ exports.handler = async function(event, context) {
         // Connect to the PostgreSQL database
         await client.connect();
     } catch (error) {
+        // Return an empty array instead of an error message
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Error connecting to database: ' + error.message }),
+            body: JSON.stringify([]),
         };
     }
 
@@ -37,9 +38,11 @@ exports.handler = async function(event, context) {
         } catch (error) {
             // In case of error during the query execution
             await client.end();
+
+            // Return an empty array instead of an error message
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
+                body: JSON.stringify([]),
             };
         }
     }
