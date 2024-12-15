@@ -26,15 +26,6 @@
         .admin-container {
             display: none;
         }
-        .password-container {
-            text-align: center;
-            margin-top: 50px;
-        }
-        .password-input {
-            padding: 10px;
-            font-size: 1em;
-            margin-right: 10px;
-        }
         .btn-login {
             padding: 10px 20px;
             font-size: 1em;
@@ -43,11 +34,7 @@
     </style>
 </head>
 <body>
-<div class="password-container" id="password-container">
-    <h2>Please enter the admin password</h2>
-    <input type="password" id="password" class="password-input" placeholder="Enter Password">
-    <button onclick="verifyPassword()" class="btn-login">Login</button>
-</div>
+
 
 <div class="admin-container" id="admin-container">
     <h1>Admin Page</h1>
@@ -69,20 +56,6 @@
 </div>
 
 <script>
-    const ADMIN_PASSWORD = '1'; // Replace with your own password
-
-    // Function to verify password
-    function verifyPassword() {
-        const password = document.getElementById('password').value;
-        if (password === ADMIN_PASSWORD) {
-            document.getElementById('password-container').style.display = 'none';
-            document.getElementById('admin-container').style.display = 'block';
-            loadAdminPage();
-        } else {
-            alert('Incorrect password');
-        }
-    }
-
     // Function to fetch item data from Home Depot (for name, img, and link)
     function getItemData(upc) {
         const url = `https://www.homedepot.com/s/${upc}`;
