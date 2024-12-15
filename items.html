@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items - Home & Labor Supplies</title>
+    <link rel="stylesheet" href="css/style1.css">
+    <style>
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .item-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        .item-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .item-card h3 {
+            margin: 10px 0;
+        }
+        .item-card p {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Home & Labor Supplies</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="items.html">Items</a>
+        <a href="social.html">Social</a>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h2>Our Items</h2>
+        <div class="item-grid" id="item-grid">
+            <!-- Dynamic Item Cards will be populated here -->
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
+</footer>
+
+<script>
+    // Function to load items from cookies
+    function loadFromCookies() {
+        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
+        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
+    }
+
+    // Function to update the item display on the page
+    function updateItems() {
+        const items = loadFromCookies();
+        const itemGrid = document.getElementById('item-grid');
+
+        itemGrid.innerHTML = '';  // Clear current items
+
+        items.forEach(item => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card';
+            itemCard.innerHTML = `
+                <img src="${item.img}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>${item.description || 'No description available'}</p>
+            `;
+            itemGrid.appendChild(itemCard);
+        });
+    }
+
+    // Call updateItems when the page loads to display current items
+    document.addEventListener('DOMContentLoaded', updateItems);
+</script>
+</body>
+</html>

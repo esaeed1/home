@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin and Customer Pages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        img {
+            max-width: 100px;
+        }
+        .history {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .admin-container {
+            display: none;
+        }
+        .password-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .password-input {
+            padding: 10px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        .btn-login {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="password-container" id="password-container">
+    <h2>Please enter the admin password</h2>
+    <input type="password" id="password" class="password-input" placeholder="Enter Password">
+    <button onclick="verifyPassword()" class="btn-login">Login</button>
+</div>
+
+<div class="admin-container" id="admin-container">
+    <h1>Admin Page</h1>
+    <div>
+        <label for="upc">UPC Code:</label>
+        <input type="text" id="upc" placeholder="Enter UPC Code">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter Quantity">
+        <button onclick="addItem()">Add Item</button>
+    </div>
+
+    <h2>Items</h2>
+    <div id="admin-items"></div>
+
+    <h2>History</h2>
+    <div id="admin-history"></div>
+</div>
+
+<script>
+    const ADMIN_PASSWORD = 'admin123'; // Replace with your own password
+
+    // Function to verify password
+    function verifyPassword() {
+        const password = document.getElementById('password').value;
+        if (password === ADMIN_PASSWORD) {
+            document.getElementById('password-container').style.display = 'none';
+            document.getElementById('admin-container').style.display = 'block';
+            loadAdminPage();
+        } else {
+            alert('Incorrect password');
+        }
+    }
+
+    // Function to fetch item data from Home Depot
+    function getItemData(upc) {
+        const url = `https://www.homedepot.com/s/${upc}`;
+        return fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const name = doc.querySelector('[data-testid="product-title"]')?.innerText || 'Unknown Item';
+                const img = doc.querySelector('img')?.src || '';
+                return { name, img, link: url };
+            })
+            .catch(() => ({ name: 'Error fetching item', img: '', link: url }));
+    }
+
+    // Function to save items to cookies
+    function saveToCookies(items) {
+        document.cookie = `items=${encodeURIComponent(JSON.stringify(items))}; path=/`;
+    }
+
+    // Function to load items from cookies
+    function loadFromCookies() {
+        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
+        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
+    }
+
+    // Function to update the admin and history pages
+    function updatePages(items) {
+        const adminContainer = document.getElementById('admin-items');
+        const historyContainer = document.getElementById('admin-history');
+
+        if (adminContainer) {
+            adminContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                const adminItem = document.createElement('div');
+                adminItem.className = 'item';
+                adminItem.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <p><strong><a href="${item.link}" target="_blank">${item.name}</a></strong></p>
+                        <p>Quantity: <input type="number" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)"></p>
+                        <button onclick="deleteItem(${index})">Delete Item</button>
+                    `;
+                adminContainer.appendChild(adminItem);
+            });
+        }
+
+        if (historyContainer) {
+            historyContainer.innerHTML = items
+                .map(item => `<div class="history">Updated: <strong>${item.name}</strong> - Quantity: ${item.quantity}</div>`)
+                .join('');
+        }
+    }
+
+    // Function to add a new item
+    function addItem() {
+        const upc = document.getElementById('upc').value;
+        const quantity = document.getElementById('quantity').value;
+        if (!upc || !quantity) {
+            alert('Please enter both UPC code and quantity.');
+            return;
+        }
+
+        getItemData(upc).then(itemData => {
+            const items = loadFromCookies();
+            items.push({
+                name: itemData.name,
+                img: itemData.img,
+                quantity: parseInt(quantity, 10),
+                link: itemData.link
+            });
+            saveToCookies(items);
+            updatePages(items);
+        });
+    }
+
+    // Function to update item quantity
+    function updateQuantity(index, newQuantity) {
+        const items = loadFromCookies();
+        items[index].quantity = parseInt(newQuantity, 10);
+        saveToCookies(items);
+        updatePages(items);
+    }
+
+    // Function to delete an item
+    function deleteItem(index) {
+        const items = loadFromCookies();
+        items.splice(index, 1);
+        saveToCookies(items);
+        updatePages(items);
+    }
+
+    // Load the admin page if already authenticated
+    function loadAdminPage() {
+        const items = loadFromCookies();
+        updatePages(items);
+    }
+</script>
+</body>
+</html>
