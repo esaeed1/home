@@ -21,15 +21,19 @@ exports.handler = async function(event, context) {
 
         try {
             const res = await client.query(query);
-            console.log(res.rows);  // Log the query result to debug
+            console.log('Query Result:', res.rows);  // Log query result
+
+            // Ensure the result is an array
+            const items = Array.isArray(res.rows) ? res.rows : [];
 
             await client.end();
             return {
                 statusCode: 200,
-                body: JSON.stringify(res.rows),
+                body: JSON.stringify(items),  // Return items as an array
             };
         } catch (error) {
             await client.end();
+            console.error('Error fetching items: ', error.message);
             return {
                 statusCode: 500,
                 body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
