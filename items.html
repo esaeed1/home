@@ -58,34 +58,35 @@
 </footer>
 
 <script>
-    // Function to load items from cookies
-    function loadFromCookies() {
-        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
-        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
+    // Function to fetch items from the database via the API
+    function fetchItems() {
+        fetch('/.netlify/functions/getItems')
+            .then(response => response.json())
+            .then(items => {
+                const itemGrid = document.getElementById('item-grid');
+                itemGrid.innerHTML = '';  // Clear current items
+
+                items.forEach(item => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'item-card';
+                    itemCard.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <h3>${item.name}</h3>
+                        <p>Quantity: ${item.quantity}</p>
+                        <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
+                    `;
+                    itemGrid.appendChild(itemCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching items:', error);
+                alert('Failed to load items.');
+            });
     }
 
-    // Function to update the item display on the page
-    function updateItems() {
-        const items = loadFromCookies();
-        const itemGrid = document.getElementById('item-grid');
-
-        itemGrid.innerHTML = '';  // Clear current items
-
-        items.forEach(item => {
-            const itemCard = document.createElement('div');
-            itemCard.className = 'item-card';
-            itemCard.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>Quantity: ${item.quantity}</p>
-                <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
-            `;
-            itemGrid.appendChild(itemCard);
-        });
-    }
-
-    // Call updateItems when the page loads to display current items
-    document.addEventListener('DOMContentLoaded', updateItems);
+    // Call fetchItems when the page loads to display current items
+    document.addEventListener('DOMContentLoaded', fetchItems);
 </script>
+
 </body>
 </html>
