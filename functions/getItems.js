@@ -1,38 +1,32 @@
-const { Client } = require('pg');
+const { createClient } = require('@supabase/supabase-js');
 
-const connectionString = 'postgresql://postgres:jJ2ACwM3sT0SsM7R@dutifully-accessible-ouzel.data-1.use1.tembo.io:5432/postgres';
+// Create a Supabase client
+const supabase = createClient(
+    'https://ymyztsxdqmiklnsjurhq.supabase.co',  // Your Supabase URL
+    'haWsh0ANKNZQ78oN+qpdQDLVbzi29QT//cY4q2wYF64LAzfXTU08NVZId5V7+cQ1v/R/FsDQCZp1oelO1OCQQg==' // Your Supabase API key
+);
 
 exports.handler = async function(event, context) {
-    const client = new Client({
-        connectionString: connectionString,
-    });
-
-    try {
-        await client.connect();
-    } catch (error) {
-        console.error('Error connecting to database:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Error connecting to database: ' + error.message }),
-        };
-    }
-
     if (event.httpMethod === 'GET') {
-        const query = 'SELECT * FROM items';
-
         try {
-            console.log('Executing query:', query); // Log the query being executed
-            const res = await client.query(query);
-            console.log('Query result:', res.rows); // Log the rows returned by the query
+            // Fetch items from the Supabase database
+            const { data, error } = await supabase
+                .from('items')  // 'items' is the table in Supabase
+                .select('*');   // Select all columns
 
-            await client.end();
+            if (error) {
+                return {
+                    statusCode: 500,
+                    body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
+                };
+            }
+
+            console.log(data);  // Log the query result for debugging
             return {
                 statusCode: 200,
-                body: JSON.stringify(res.rows),
+                body: JSON.stringify(data),  // Send the fetched items as the response
             };
         } catch (error) {
-            console.error('Error fetching items:', error);
-            await client.end();
             return {
                 statusCode: 500,
                 body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
