@@ -6,30 +6,18 @@
     <title>Items - Home & Labor Supplies</title>
     <link rel="stylesheet" href="css/style1.css">
     <style>
-        .item-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
-        .item-card {
-            border: 1px solid #ccc;
+        pre {
+            background-color: #f4f4f4;
             padding: 10px;
-            text-align: center;
-        }
-        .item-card img {
+            border: 1px solid #ccc;
+            white-space: pre-wrap;       /* Allows long lines to break */
+            word-wrap: break-word;      /* Prevents overflow */
             max-width: 100%;
-            height: auto;
-        }
-        .item-card h3 {
-            margin: 10px 0;
-        }
-        .item-card p {
-            font-size: 0.9em;
-            color: #555;
-        }
-        .item-card a {
-            text-decoration: none;
-            color: #007bff;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -47,14 +35,12 @@
 <main>
     <section>
         <h2>Our Items</h2>
-        <div class="item-grid" id="item-grid">
-            <!-- Dynamic Item Cards will be populated here -->
-        </div>
+        <pre id="item-data">Loading items...</pre> <!-- The items will be displayed here -->
     </section>
 </main>
 
 <footer>
-    <p>&copy; 2028 Home & Labor Supplies. All rights reserved.</p>
+    <p>&copy; 2020 Home & Labor Supplies. All rights reserved.</p>
 </footer>
 
 <script>
@@ -65,34 +51,23 @@
             .then(items => {
                 console.log('Fetched items:', items); // Log the response to check the structure
 
-                // Check if items is an array and not empty
-                if (Array.isArray(items) && items.length > 0) {
-                    const itemGrid = document.getElementById('item-grid');
-                    itemGrid.innerHTML = '';  // Clear current items
+                const itemData = document.getElementById('item-data');
 
-                    items.forEach(item => {
-                        const itemCard = document.createElement('div');
-                        itemCard.className = 'item-card';
-                        itemCard.innerHTML = `
-                            <img src="${item.img}" alt="${item.name}">
-                            <h3>${item.name}</h3>
-                            <p>Quantity: ${item.quantity}</p>
-                            <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
-                        `;
-                        itemGrid.appendChild(itemCard);
-                    });
+                // Check if items are returned and are in the correct format
+                if (Array.isArray(items) && items.length > 0) {
+                    itemData.textContent = JSON.stringify(items, null, 2); // Display as pretty-printed JSON
                 } else {
+                    itemData.textContent = 'No items found or invalid response.';
                     console.error('No items found or invalid response:', items);
-                    alert('No items found or failed to load.');
                 }
             })
             .catch(error => {
                 console.error('Error fetching items:', error);
-                alert('Failed to load items.');
+                document.getElementById('item-data').textContent = 'Failed to load items.';
             });
     }
 
-    // Call fetchItems when the page loads to display current items
+    // Call fetchItems when the page loads
     document.addEventListener('DOMContentLoaded', fetchItems);
 </script>
 
