@@ -1,41 +1,27 @@
-const { createClient } = require('@supabase/supabase-js');
+// Import the Supabase client
+import { createClient } from '@supabase/supabase-js';
 
-// Create a Supabase client
-const supabase = createClient(
-    'https://ymyztsxdqmiklnsjurhq.supabase.co',  // Your Supabase URL
-    'haWsh0ANKNZQ78oN+qpdQDLVbzi29QT//cY4q2wYF64LAzfXTU08NVZId5V7+cQ1v/R/FsDQCZp1oelO1OCQQg==' // Your Supabase API key
-);
+// Initialize the client with your Supabase URL and Key
+const supabaseUrl = 'https://ymyztsxdqmiklnsjurhq.supabase.co';
+const supabaseKey =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlteXp0c3hkcW1pa2xuc2p1cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNDA3MzQsImV4cCI6MjA0OTgxNjczNH0.dGJ9LjCTGvGzUrSQfln_nxiIrxXNBy57Z98b8G7yZqk';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-exports.handler = async function(event, context) {
-    if (event.httpMethod === 'GET') {
-        try {
-            // Fetch items from the Supabase database
-            const { data, error } = await supabase
-                .from('items')  // 'items' is the table in Supabase
-                .select('*');   // Select all columns
+// Fetch items from Supabase
+async function fetchItems() {
+    try {
+        const { data, error } = await supabase
+            .from('items')
+            .select('*');
 
-            if (error) {
-                return {
-                    statusCode: 500,
-                    body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
-                };
-            }
-
-            console.log(data);  // Log the query result for debugging
-            return {
-                statusCode: 200,
-                body: JSON.stringify(data),  // Send the fetched items as the response
-            };
-        } catch (error) {
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ error: 'Error fetching items: ' + error.message }),
-            };
+        if (error) {
+            throw new Error(error.message);
         }
-    }
 
-    return {
-        statusCode: 405,
-        body: JSON.stringify({ error: 'Method Not Allowed' }),
-    };
-};
+        return data;
+    } catch (err) {
+        console.error('Error fetching items:', err);
+        return { error: err.message };
+    }
+}
+
+export { fetchItems };
