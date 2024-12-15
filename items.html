@@ -37,7 +37,7 @@
 <header>
     <h1>Home & Labor Supplies</h1>
     <nav>
-        <a href="index.html">Home11</a>
+        <a href="index.html">Home</a>
         <a href="contact.html">Contact</a>
         <a href="items.html">Items</a>
         <a href="social.html">Social</a>
@@ -54,11 +54,10 @@
 </main>
 
 <footer>
-    <p>&copy; 2025 Home & Labor Supplies. All rights reserved.</p>
+    <p>&copy; 2026 Home & Labor Supplies. All rights reserved.</p>
 </footer>
 
 <script>
-    // Function to fetch items from the database via the API
     // Function to fetch items from the database via the API
     function fetchItems() {
         fetch('/.netlify/functions/getItems')
@@ -75,16 +74,16 @@
                         const itemCard = document.createElement('div');
                         itemCard.className = 'item-card';
                         itemCard.innerHTML = `
-                        <img src="${item.img}" alt="${item.name}">
-                        <h3>${item.name}</h3>
-                        <p>Quantity: ${item.quantity}</p>
-                        <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
-                    `;
+                            <img src="${item.img}" alt="${item.name}">
+                            <h3>${item.name}</h3>
+                            <p>Quantity: ${item.quantity}</p>
+                            <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
+                        `;
                         itemGrid.appendChild(itemCard);
                     });
                 } else {
-                    console.error('No items found or received an invalid response:', items);
-                    alert('Failed to load items: No items available.');
+                    console.error('No items found or invalid response:', items);
+                    alert('No items found or failed to load.');
                 }
             })
             .catch(error => {
@@ -92,11 +91,6 @@
                 alert('Failed to load items.');
             });
     }
-
-    // Call fetchItems when the page loads to display current items
-    document.addEventListener('DOMContentLoaded', fetchItems);
-
-
 
     // Call fetchItems when the page loads to display current items
     document.addEventListener('DOMContentLoaded', fetchItems);
