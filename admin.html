@@ -10,8 +10,8 @@
 <div class="admin-container" id="admin-container">
     <h1>Admin Page</h1>
     <div>
-        <label for="name">Item Name:</label>
-        <input type="text" id="name" placeholder="Enter Item Name">
+<!--        <label for="name">Item Name:</label>-->
+<!--        <input type="text" id="name" placeholder="Enter Item Name">-->
         <label for="upc">UPC Code:</label>
         <input type="text" id="upc" placeholder="Enter UPC Code">
         <label for="quantity">Quantity:</label>
@@ -28,19 +28,51 @@
 
 <script>
     // Function to fetch item data from Home Depot (for name, img, and link)
-    function getItemData(upc) {
+    // Function to fetch item data from Home Depot using the UPC
+    async function getItemData(upc) {
         const url = `https://www.homedepot.com/s/${upc}`;
-        return fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const name = doc.querySelector('[data-testid="product-title"]')?.innerText || 'Unknown Item';
-                const img = doc.querySelector('img')?.src || '';
-                return { name, img, link: url };
-            })
-            .catch(() => ({ name: 'Error fetching item', img: '', link: url }));
+
+        try {
+            // Fetch the page HTML
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const html = await response.text();
+
+            // Create a DOM parser to extract the title
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Try to find the title from meta tag or <title> tag
+            const metaTag = doc.querySelector('meta[property="og:title"]');
+            const titleTag = doc.querySelector('title');
+            const title = metaTag
+                ? metaTag.getAttribute('content')
+                : titleTag
+                    ? titleTag.textContent.trim()
+                    : 'Title not found';
+
+            // Find the first image URL (if available)
+            const imgTag = doc.querySelector('img');
+            const img = imgTag ? imgTag.getAttribute('src') : null;
+
+            return {
+                name: title,
+                img: img,
+                link: url
+            };
+        } catch (error) {
+            console.error('Error fetching item data:', error);
+            return {
+                name: 'Error fetching data',
+                img: null,
+                link: url
+            };
+        }
     }
+
 
     // Function to save items to cookies
     function saveToCookies(items) {
@@ -75,11 +107,11 @@
 
     // Function to add a new item
     function addItem() {
-        const name = document.getElementById('name').value;  // New field for item name
+       // const name = document.getElementById('name').value;  // New field for item name
         const upc = document.getElementById('upc').value;
         const quantity = document.getElementById('quantity').value;
 
-        if (!name || !upc || !quantity) {
+        if (!upc || !quantity) {
             alert('Please enter the item name, UPC code, and quantity.');
             return;
         }
