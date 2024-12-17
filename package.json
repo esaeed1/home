@@ -1,0 +1,15 @@
+{
+  "name": "supabase-demo",
+  "version": "1.0.0",
+  "description": "A simple project to display items from a Supabase database on a webpage.",
+  "main": "script.js",
+  "scripts": {
+    "start": "npx http-server public"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {}
+}

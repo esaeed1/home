@@ -35,7 +35,7 @@
 </head>
 <body>
 <header>
-    <h1>Home & Labor Supplies</h1>
+    <h1>Home & Labor Supplies 1</h1>
     <nav>
         <a href="index.html">Home</a>
         <a href="contact.html">Contact</a>
@@ -57,35 +57,7 @@
     <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
 </footer>
 
-<script>
-    // Function to load items from cookies
-    function loadFromCookies() {
-        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
-        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
-    }
+<script type="module" src="/js/getItems.js"></script>
 
-    // Function to update the item display on the page
-    function updateItems() {
-        const items = loadFromCookies();
-        const itemGrid = document.getElementById('item-grid');
-
-        itemGrid.innerHTML = '';  // Clear current items
-
-        items.forEach(item => {
-            const itemCard = document.createElement('div');
-            itemCard.className = 'item-card';
-            itemCard.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>Quantity: ${item.quantity}</p>
-                <p><a href="${item.link}" target="_blank">View on Home Depot</a></p>
-            `;
-            itemGrid.appendChild(itemCard);
-        });
-    }
-
-    // Call updateItems when the page loads to display current items
-    document.addEventListener('DOMContentLoaded', updateItems);
-</script>
 </body>
 </html>
