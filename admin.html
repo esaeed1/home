@@ -10,13 +10,11 @@
 <div class="admin-container" id="admin-container">
     <h1>Admin Page</h1>
     <div>
-<!--        <label for="name">Item Name:</label>-->
-<!--        <input type="text" id="name" placeholder="Enter Item Name">-->
         <label for="upc">UPC Code:</label>
         <input type="text" id="upc" placeholder="Enter UPC Code">
         <label for="quantity">Quantity:</label>
         <input type="number" id="quantity" placeholder="Enter Quantity">
-        <button onclick="addItem()">Add Item</button>
+        <button id="add-item-btn">Add Item</button> <!-- Updated button to use id -->
     </div>
 
     <h2>Items</h2>
@@ -26,146 +24,8 @@
     <button onclick="downloadItems()">Download Items as JSON</button>
 </div>
 
-<script>
-    // Function to fetch item data from Home Depot (for name, img, and link)
-    // Function to fetch item data from Home Depot using the UPC
-    async function getItemData(upc) {
-        const url = `https://www.homedepot.com/s/${upc}`;
+<!-- Add Supabase client script -->
+<script type="module" src="/js/addItems.js"></script>
 
-        try {
-            // Fetch the page HTML
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const html = await response.text();
-
-            // Create a DOM parser to extract the title
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Try to find the title from meta tag or <title> tag
-            const metaTag = doc.querySelector('meta[property="og:title"]');
-            const titleTag = doc.querySelector('title');
-            const title = metaTag
-                ? metaTag.getAttribute('content')
-                : titleTag
-                    ? titleTag.textContent.trim()
-                    : 'Title not found';
-
-            // Find the first image URL (if available)
-            const imgTag = doc.querySelector('img');
-            const img = imgTag ? imgTag.getAttribute('src') : null;
-
-            return {
-                name: title,
-                img: img,
-                link: url
-            };
-        } catch (error) {
-            console.error('Error fetching item data:', error);
-            return {
-                name: 'Error fetching data',
-                img: null,
-                link: url
-            };
-        }
-    }
-
-
-    // Function to save items to cookies
-    function saveToCookies(items) {
-        document.cookie = `items=${encodeURIComponent(JSON.stringify(items))}; path=/`;
-    }
-
-    // Function to load items from cookies
-    function loadFromCookies() {
-        const cookieString = document.cookie.split('; ').find(row => row.startsWith('items='));
-        return cookieString ? JSON.parse(decodeURIComponent(cookieString.split('=')[1])) : [];
-    }
-
-    // Function to update the admin page
-    function updatePages(items) {
-        const adminContainer = document.getElementById('admin-items');
-
-        if (adminContainer) {
-            adminContainer.innerHTML = '';
-            items.forEach((item, index) => {
-                const adminItem = document.createElement('div');
-                adminItem.className = 'item';
-                adminItem.innerHTML = `
-                    <img src="${item.img}" alt="${item.name}">
-                    <p><strong><a href="${item.link}" target="_blank">${item.name}</a></strong></p>
-                    <p>Quantity: <input type="number" value="${item.quantity}" onchange="updateQuantity(${index}, this.value)"></p>
-                    <button onclick="deleteItem(${index})">Delete Item</button>
-                `;
-                adminContainer.appendChild(adminItem);
-            });
-        }
-    }
-
-    // Function to add a new item
-    function addItem() {
-       // const name = document.getElementById('name').value;  // New field for item name
-        const upc = document.getElementById('upc').value;
-        const quantity = document.getElementById('quantity').value;
-
-        if (!upc || !quantity) {
-            alert('Please enter the item name, UPC code, and quantity.');
-            return;
-        }
-
-        // Use the manually entered name or fetch data from Home Depot if not entered
-        getItemData(upc).then(itemData => {
-            const items = loadFromCookies();
-            items.push({
-                name: name || itemData.name,  // If name is provided, use it; otherwise, use the fetched name
-                img: itemData.img,
-                quantity: parseInt(quantity, 10),
-                link: itemData.link
-            });
-            saveToCookies(items);
-            updatePages(items);
-        });
-    }
-
-    // Function to update item quantity
-    function updateQuantity(index, newQuantity) {
-        const items = loadFromCookies();
-        items[index].quantity = parseInt(newQuantity, 10);
-        saveToCookies(items);
-        updatePages(items);
-    }
-
-    // Function to delete an item
-    function deleteItem(index) {
-        const items = loadFromCookies();
-        items.splice(index, 1);
-        saveToCookies(items);
-        updatePages(items);
-    }
-
-    // Function to download items as a JSON file
-    function downloadItems() {
-        const items = loadFromCookies();
-        const jsonData = JSON.stringify(items, null, 2);
-
-        // Create a Blob from the JSON string
-        const blob = new Blob([jsonData], { type: 'application/json' });
-
-        // Create a link to download the Blob
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'items.json';  // Name of the file to download
-        link.click();
-    }
-
-    // Load the admin page if already authenticated
-    function loadAdminPage() {
-        const items = loadFromCookies();
-        updatePages(items);
-    }
-</script>
 </body>
 </html>
