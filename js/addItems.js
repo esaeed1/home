@@ -17,6 +17,24 @@ async function fetchItems() {
         // Sort items by quantity in descending order
         const sortedData = data.sort((a, b) => b.quantity - a.quantity);
 
+        // Calculate total unique products and find duplicates by UPC
+        const seenUPCs = new Map();
+        const duplicates = [];
+        let totalProducts = 0;
+
+        sortedData.forEach(item => {
+            totalProducts++;
+
+            if (seenUPCs.has(item.upc)) {
+                duplicates.push(item);
+                seenUPCs.get(item.upc).count++;
+                seenUPCs.get(item.upc).details.push(item);
+            } else {
+                seenUPCs.set(item.upc, { count: 1, details: [item] });
+            }
+        });
+
+        // Render items
         const itemGrid = document.getElementById('item-grid');
         itemGrid.innerHTML = '';
 
@@ -32,6 +50,34 @@ async function fetchItems() {
                 <p>Quantity: ${item.quantity}</p>
             `;
             itemGrid.appendChild(itemCard);
+        });
+
+        // Display total products
+        const totalItemsCounter = document.getElementById('total-items');
+        totalItemsCounter.textContent = `Total Products: ${totalProducts}`;
+
+        // Log the total count in the console for easier debugging
+        console.log(`Total Products: ${totalProducts}`);
+
+        // Display duplicates
+        const duplicatesList = document.getElementById('duplicates-list');
+        duplicatesList.innerHTML = '<h3>Duplicates</h3>';
+        duplicates.forEach(duplicate => {
+            const duplicateEntry = document.createElement('div');
+            duplicateEntry.innerHTML = `
+                <p><strong>${duplicate.name}</strong> - UPC: ${duplicate.upc}</p>
+                <ul>
+                    ${seenUPCs
+                .get(duplicate.upc)
+                .details.map(
+                    detail =>
+                        `<li>Quantity: ${detail.quantity}, <a href="${detail.link}" target="_blank">View Product</a></li>`
+                )
+                .join('')}
+
+                </ul>
+            `;
+            duplicatesList.appendChild(duplicateEntry);
         });
     } catch (err) {
         console.error('Fetch error:', err);

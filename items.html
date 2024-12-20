@@ -65,6 +65,15 @@
             color: #555;
         }
 
+        #total-items {
+            color: white; /* Makes the text blend with white background */
+            position: absolute; /* Keeps it positioned outside the normal flow */
+            top: 50px; /* Adjusted to make it a bit lower */
+            left: 10px;
+            font-size: 16px;
+            background-color: transparent;
+        }
+
         @media (max-width: 600px) {
             header h1 {
                 font-size: 1.2em;
@@ -98,8 +107,12 @@
 <main>
     <section>
         <h2>Our Items</h2>
+        <p id="total-items">Total Items: 0</p> <!-- Hidden from public -->
         <div class="item-grid" id="item-grid">
             <!-- Dynamic Item Cards will be populated here -->
+        </div>
+        <div id="duplicates-list">
+            <!-- Duplicates will be listed here -->
         </div>
     </section>
 </main>
