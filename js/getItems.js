@@ -6,13 +6,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function fetchItems() {
     try {
-        // Fetching items from Supabase
-        const { data, error } = await supabase.from('items').select('*');
+        // Fetch items from Supabase and sort by quantity (descending)
+        const { data, error } = await supabase
+            .from('items')
+            .select('*')
+            .order('quantity', { ascending: false });
+
         if (error) {
             console.error('Supabase error:', error);
             return;
         }
-        console.log('Fetched items:', data);
+        console.log('Fetched and sorted items:', data);
 
         const itemGrid = document.getElementById('item-grid');
         itemGrid.innerHTML = '';  // Clear current items
@@ -34,6 +38,7 @@ async function fetchItems() {
         console.error('Fetch error:', err);
     }
 }
+
 
 // Call fetchItems when the page loads to display the current items
 document.addEventListener('DOMContentLoaded', fetchItems);
