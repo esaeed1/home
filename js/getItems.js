@@ -61,17 +61,47 @@ function populateTags(items) {
     tagFilter.innerHTML = ''; // Clear current filters
 
     uniqueTags.forEach(tag => {
-        const tagButton = document.createElement('button');
-        tagButton.className = 'tag-button';
-        tagButton.textContent = tag;
-        tagButton.onclick = () => filterItemsByTag(tag);
-        tagFilter.appendChild(tagButton);
+        const checkboxContainer = document.createElement('div');
+        checkboxContainer.className = 'tag-checkbox-container';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = tag;
+        checkbox.className = 'tag-checkbox';
+        checkbox.onclick = () => filterItemsByTags();
+
+        const label = document.createElement('label');
+        label.setAttribute('for', tag);
+        label.textContent = tag;
+
+        checkboxContainer.appendChild(checkbox);
+        checkboxContainer.appendChild(label);
+        tagFilter.appendChild(checkboxContainer);
     });
 }
 
-function filterItemsByTag(tag) {
-    const filteredItems = allItems.filter(item => item.tags && item.tags.includes(tag));
-    displayItems(filteredItems);
+function filterItemsByTags() {
+    const selectedTags = [];
+    const checkboxes = document.querySelectorAll('.tag-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedTags.push(checkbox.id);
+        }
+    });
+
+    const filteredItems = allItems.filter(item => {
+        if (!item.tags) return false;
+        const itemTags = item.tags.split(',').map(tag => tag.trim());
+        return selectedTags.every(tag => itemTags.includes(tag));
+    });
+
+    if (selectedTags.length === 0) {
+        // If no tags are selected, show all items
+        displayItems(allItems);
+    } else {
+        displayItems(filteredItems);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', fetchItems);
