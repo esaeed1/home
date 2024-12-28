@@ -26,6 +26,7 @@ async function fetchItems() {
             const itemCard = document.createElement('div');
             itemCard.className = 'item-card';
             itemCard.innerHTML = `
+                <div class="item-id">${item.id}</div>
                 <img src="${item.img}" alt="${item.name}">
                 <h3>${item.name}</h3>
                 <p>UPC: ${item.upc}</p>
@@ -38,7 +39,6 @@ async function fetchItems() {
         console.error('Fetch error:', err);
     }
 }
-
 
 // Call fetchItems when the page loads to display the current items
 document.addEventListener('DOMContentLoaded', fetchItems);

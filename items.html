@@ -35,6 +35,7 @@
         }
 
         .item-card {
+            position: relative;
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
@@ -65,13 +66,21 @@
             color: #555;
         }
 
-        #total-items {
-            color: white; /* Makes the text blend with white background */
-            position: absolute; /* Keeps it positioned outside the normal flow */
-            top: 50px; /* Adjusted to make it a bit lower */
-            left: 10px;
-            font-size: 16px;
-            background-color: transparent;
+        .item-id {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
         }
 
         @media (max-width: 600px) {
@@ -90,6 +99,12 @@
             .item-card p {
                 font-size: 0.8em;
             }
+
+            .item-id {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -107,12 +122,8 @@
 <main>
     <section>
         <h2>Our Items</h2>
-<!--        <p id="total-items">Total Items: 0</p> &lt;!&ndash; Hidden from public &ndash;&gt;-->
         <div class="item-grid" id="item-grid">
             <!-- Dynamic Item Cards will be populated here -->
-        </div>
-        <div id="duplicates-list">
-            <!-- Duplicates will be listed here -->
         </div>
     </section>
 </main>
@@ -121,6 +132,6 @@
     <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
 </footer>
 
-<script type="module" src="js/addItems.js"></script>
+<script type="module" src="js/getItems.js"></script>
 </body>
 </html>
