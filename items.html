@@ -135,9 +135,51 @@
         }
 
         .tag-filter label {
-            margin-right: 20px;
+            margin-right: 10px;
             font-size: 1em;
         }
+
+        .tag-filter {
+            margin-bottom: 20px;
+        }
+
+        .tag-checkbox-container {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px; /* Adjusted to control spacing between tags */
+        }
+
+        .tag-checkbox {
+            margin-right: 5px; /* Space between checkbox and label */
+        }
+
+        .tag-filter-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .tag-filter-content {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .tag-filter-content.open {
+            display: flex;
+            flex-wrap: wrap; /* Ensures horizontal layout with wrapping */
+            justify-content: flex-start; /* Aligns tags to the left */
+        }
+
+        .tag-filter-content .tag-checkbox-container {
+            margin-right: 15px; /* Adjust spacing between each tag */
+            margin-bottom: 10px; /* Adjusts vertical spacing when tags wrap to a new line */
+        }
+
 
     </style>
 </head>
@@ -155,7 +197,10 @@
 <main>
     <section>
         <h2>Filter by Tags</h2>
-        <div id="tag-filter" class="tag-filter"></div>
+        <button class="tag-filter-button" onclick="toggleTagFilter()">Toggle Tag Filter</button>
+        <div id="tag-filter" class="tag-filter">
+            <div id="tag-filter-content" class="tag-filter-content"></div>
+        </div>
     </section>
 
     <section>
@@ -171,5 +216,13 @@
 </footer>
 
 <script type="module" src="js/getItems.js"></script>
+
+<script>
+    function toggleTagFilter() {
+        const tagContent = document.getElementById('tag-filter-content');
+        tagContent.classList.toggle('open');
+    }
+</script>
+
 </body>
 </html>

@@ -4,7 +4,7 @@ const SUPABASE_URL = 'https://ymyztsxdqmiklnsjurhq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlteXp0c3hkcW1pa2xuc2p1cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNDA3MzQsImV4cCI6MjA0OTgxNjczNH0.dGJ9LjCTGvGzUrSQfln_nxiIrxXNBy57Z98b8G7yZqk';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let allItems = []; // Store all items globally
+let allItems = [];
 
 async function fetchItems() {
     try {
@@ -19,7 +19,7 @@ async function fetchItems() {
         }
 
         console.log('Fetched items:', data);
-        allItems = data; // Store fetched items
+        allItems = data;
         displayItems(data);
         populateTags(data);
     } catch (err) {
@@ -29,7 +29,7 @@ async function fetchItems() {
 
 function displayItems(items) {
     const itemGrid = document.getElementById('item-grid');
-    itemGrid.innerHTML = ''; // Clear current items
+    itemGrid.innerHTML = '';
 
     items.forEach(item => {
         const itemCard = document.createElement('a');
@@ -57,8 +57,8 @@ function populateTags(items) {
         }
     });
 
-    const tagFilter = document.getElementById('tag-filter');
-    tagFilter.innerHTML = ''; // Clear current filters
+    const tagFilterContent = document.getElementById('tag-filter-content');
+    tagFilterContent.innerHTML = ''; // Clear current filter content
 
     uniqueTags.forEach(tag => {
         const checkboxContainer = document.createElement('div');
@@ -76,7 +76,7 @@ function populateTags(items) {
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
-        tagFilter.appendChild(checkboxContainer);
+        tagFilterContent.appendChild(checkboxContainer);
     });
 }
 
@@ -97,7 +97,6 @@ function filterItemsByTags() {
     });
 
     if (selectedTags.length === 0) {
-        // If no tags are selected, show all items
         displayItems(allItems);
     } else {
         displayItems(filteredItems);
