@@ -8,14 +8,13 @@
     <style>
         .item-notes {
             font-size: 0.9em;
-            color: #d9534f; /* Highlight notes in a noticeable color */
+            color: #d9534f;
             margin-top: 10px;
             background-color: #f8d7da;
             padding: 5px;
             border-radius: 4px;
             text-align: left;
         }
-
 
         body {
             margin: 0;
@@ -47,9 +46,9 @@
 
         .item-card {
             position: relative;
-            display: block; /* Ensure the card is block-level for the entire area to be clickable */
-            text-decoration: none; /* Remove underline from link text */
-            color: inherit; /* Ensure text color stays the same */
+            display: block;
+            text-decoration: none;
+            color: inherit;
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
@@ -69,7 +68,6 @@
             height: auto;
             border-radius: 5px;
         }
-
 
         .item-id {
             position: absolute;
@@ -111,6 +109,43 @@
                 font-size: 12px;
             }
         }
+
+        .item-tags {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .item-tags .tag {
+            display: inline-block;
+            background-color: #f1f1f1;
+            color: #007bff;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .tag-filter {
+            margin-bottom: 20px;
+        }
+
+        .tag-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .tag-button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
@@ -126,10 +161,13 @@
 
 <main>
     <section>
+        <h2>Filter by Tags</h2>
+        <div id="tag-filter" class="tag-filter"></div>
+    </section>
+
+    <section>
         <h2>Our Items</h2>
         <div class="item-grid" id="item-grid">
-            ${item.notes ? `<p class="item-notes">Notes: ${item.notes}</p>` : ''}
-
             <!-- Dynamic Item Cards will be populated here -->
         </div>
     </section>
