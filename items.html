@@ -36,6 +36,9 @@
 
         .item-card {
             position: relative;
+            display: block; /* Ensure the card is block-level for the entire area to be clickable */
+            text-decoration: none; /* Remove underline from link text */
+            color: inherit; /* Ensure text color stays the same */
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
@@ -56,15 +59,6 @@
             border-radius: 5px;
         }
 
-        .item-card h3 {
-            margin: 10px 0;
-            font-size: 1em;
-        }
-
-        .item-card p {
-            font-size: 0.9em;
-            color: #555;
-        }
 
         .item-id {
             position: absolute;

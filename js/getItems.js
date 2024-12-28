@@ -23,7 +23,9 @@ async function fetchItems() {
 
         // Dynamically create item cards
         data.forEach(item => {
-            const itemCard = document.createElement('div');
+            const itemCard = document.createElement('a'); // Anchor tag for the whole card
+            itemCard.href = item.link; // Link to Home Depot
+            itemCard.target = "_blank"; // Open in a new tab
             itemCard.className = 'item-card';
             itemCard.innerHTML = `
                 <div class="item-id">${item.id}</div>
@@ -31,7 +33,6 @@ async function fetchItems() {
                 <h3>${item.name}</h3>
                 <p>UPC: ${item.upc}</p>
                 <p>Quantity: ${item.quantity}</p>
-                <a href="${item.link}" target="_blank">View on Home Depot</a>
             `;
             itemGrid.appendChild(itemCard);
         });
