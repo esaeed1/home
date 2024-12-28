@@ -6,6 +6,17 @@
     <title>Items - Home & Labor Supplies</title>
     <link rel="stylesheet" href="css/style1.css">
     <style>
+        .item-notes {
+            font-size: 0.9em;
+            color: #d9534f; /* Highlight notes in a noticeable color */
+            margin-top: 10px;
+            background-color: #f8d7da;
+            padding: 5px;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -117,6 +128,8 @@
     <section>
         <h2>Our Items</h2>
         <div class="item-grid" id="item-grid">
+            ${item.notes ? `<p class="item-notes">Notes: ${item.notes}</p>` : ''}
+
             <!-- Dynamic Item Cards will be populated here -->
         </div>
     </section>

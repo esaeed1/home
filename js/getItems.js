@@ -19,7 +19,7 @@ async function fetchItems() {
         console.log('Fetched and sorted items:', data);
 
         const itemGrid = document.getElementById('item-grid');
-        itemGrid.innerHTML = '';  // Clear current items
+        itemGrid.innerHTML = ''; // Clear current items
 
         // Dynamically create item cards
         data.forEach(item => {
@@ -33,6 +33,7 @@ async function fetchItems() {
                 <h3>${item.name}</h3>
                 <p>UPC: ${item.upc}</p>
                 <p>Quantity: ${item.quantity}</p>
+                ${item.notes ? `<p class="item-notes">Notes: ${item.notes}</p>` : ''}
             `;
             itemGrid.appendChild(itemCard);
         });
