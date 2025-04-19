@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Items - Home & Labor Supplies</title>
+    <link rel="stylesheet" href="css/style1.css">
+    <style>
+        .item-notes {
+            font-size: 0.9em;
+            color: #d9534f;
+            margin-top: 10px;
+            background-color: #f8d7da;
+            padding: 5px;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            padding: 10px;
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .item-card {
+            position: relative;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: scale(1.03);
+        }
+
+        .item-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .item-id {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.2em;
+            }
+
+            .item-card {
+                padding: 8px;
+            }
+
+            .item-card h3 {
+                font-size: 0.9em;
+            }
+
+            .item-card p {
+                font-size: 0.8em;
+            }
+
+            .item-id {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+        }
+
+        .item-tags {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .item-tags .tag {
+            display: inline-block;
+            background-color: #f1f1f1;
+            color: #007bff;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .tag-filter {
+            margin-bottom: 20px;
+        }
+
+        .tag-checkbox {
+            margin-right: 10px;
+        }
+
+        .tag-filter label {
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        .tag-filter {
+            margin-bottom: 20px;
+        }
+
+        .tag-checkbox-container {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px; /* Adjusted to control spacing between tags */
+        }
+
+        .tag-checkbox {
+            margin-right: 5px; /* Space between checkbox and label */
+        }
+
+        .tag-filter-button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .tag-filter-content {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .tag-filter-content.open {
+            display: flex;
+            flex-wrap: wrap; /* Ensures horizontal layout with wrapping */
+            justify-content: flex-start; /* Aligns tags to the left */
+        }
+
+        .tag-filter-content .tag-checkbox-container {
+            margin-right: 15px; /* Adjust spacing between each tag */
+            margin-bottom: 10px; /* Adjusts vertical spacing when tags wrap to a new line */
+        }
+
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>Home & Labor Supplies</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="items.html">Items</a>
+        <a href="social.html">Social</a>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h2>Filter by Tags</h2>
+        <button class="tag-filter-button" onclick="toggleTagFilter()">Tag Filter</button>
+        <div id="tag-filter" class="tag-filter">
+            <div id="tag-filter-content" class="tag-filter-content"></div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Our Items</h2>
+        <div class="item-grid" id="item-grid">
+            <!-- Dynamic Item Cards will be populated here -->
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
+</footer>
+
+<script type="module" src="js/getItemsEd.js"></script>
+
+<script>
+    function toggleTagFilter() {
+        const tagContent = document.getElementById('tag-filter-content');
+        tagContent.classList.toggle('open');
+    }
+</script>
+
+</body>
+</html>
