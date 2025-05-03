@@ -18,14 +18,22 @@ async function fetchItems() {
             return;
         }
 
-        console.log('Fetched items:', data);
-        allItems = data;
-        displayItems(data);
-        populateTags(data);
+        // Filter out items that have "home" in their tags
+        const filteredData = data.filter(item => {
+            if (!item.tags) return true;
+            const tags = item.tags.split(',').map(tag => tag.trim().toLowerCase());
+            return !tags.includes('home');
+        });
+
+        console.log('Filtered items (no home tag):', filteredData);
+        allItems = filteredData;
+        displayItems(filteredData);
+        populateTags(filteredData);
     } catch (err) {
         console.error('Fetch error:', err);
     }
 }
+
 
 function displayItems(items) {
     const itemGrid = document.getElementById('item-grid');
