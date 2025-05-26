@@ -67,7 +67,7 @@ function showToast(message, type = 'success') {
     }).showToast();
 }
 
-// Load existing items with "Need" tag
+// Load existing items with UPC=0
 async function loadNeededItems(filterTag = null) {
     try {
         showLoading();
@@ -76,7 +76,7 @@ async function loadNeededItems(filterTag = null) {
         let query = supabase
             .from('items')
             .select('*')
-            .eq('tags', 'Need');
+            .eq('upc', 0);
 
         if (filterTag) {
             query = query.contains('tags', [filterTag]);
@@ -103,7 +103,7 @@ async function loadNeededItems(filterTag = null) {
         shoppingList.innerHTML = ''; // Clear existing items
 
         if (sortedData.length === 0) {
-            console.log('No items found with Need tag');
+            console.log('No items found with UPC=0');
             shoppingList.innerHTML = '<p>No items in your shopping list yet.</p>';
             return;
         }
@@ -137,7 +137,7 @@ function addItemToDisplay(item) {
 
     // Convert tags array to string for display
     const tagsDisplay = Array.isArray(item.tags) 
-        ? item.tags.filter(tag => tag !== 'Need').join(', ')
+        ? item.tags.join(', ')
         : '';
 
     shoppingItem.innerHTML = `
@@ -171,7 +171,7 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
     }
 
     // Process tags
-    const tags = ['Need']; // Always include 'Need' tag
+    const tags = [];
     if (tagsInput) {
         const additionalTags = tagsInput.split(',')
             .map(tag => tag.trim())
@@ -193,7 +193,6 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
                     quantity: parseInt(quantity),
                     notes: notes + (dimensions ? `\nDimensions: ${dimensions}` : ''),
                     tags: tags,
-                    // Default values for required fields
                     upc: 0,
                     img: '',
                     link: ''
