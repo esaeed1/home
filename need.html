@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Shopping List - Home & Labor Supplies</title>
+    <!-- Add Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Add Toastify for notifications -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .shopping-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .shopping-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .shopping-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .shopping-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .item-details {
+            margin-top: 10px;
+        }
+
+        .item-details p {
+            margin: 5px 0;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Add Toast Notification Styles */
+        .toast-success {
+            background: #28a745 !important;
+        }
+        .toast-error {
+            background: #dc3545 !important;
+        }
+
+        /* Add Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Shopping List</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact</a>
+            <a href="items.html">Items</a>
+            <a href="social.html">Social</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="shopping-form">
+            <h2>Add New Item</h2>
+            <form id="shoppingForm">
+                <div class="form-group">
+                    <label for="itemType">Item Type:</label>
+                    <select id="itemType" required>
+                        <option value="">Select an item type</option>
+                        <option value="window">Window</option>
+                        <option value="door">Door</option>
+                        <option value="tool">Tool</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="itemName">Item Name:</label>
+                    <input type="text" id="itemName" required placeholder="e.g., Double Hung Window">
+                </div>
+
+                <div class="form-group dimensions-group" style="display: none;">
+                    <label for="dimensions">Dimensions:</label>
+                    <input type="text" id="dimensions" placeholder="e.g., 28x54 inches">
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" min="1" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes:</label>
+                    <textarea id="notes" rows="3" placeholder="Add any specific details or requirements"></textarea>
+                </div>
+
+                <button type="submit">Add to Shopping List</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Your Shopping List</h2>
+            <div id="shoppingList" class="shopping-list">
+                <!-- Items will be added here dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <div id="loadingSpinner" class="loading-spinner"></div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'YOUR_SUPABASE_URL'
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                className: `toast-${type}`,
+            }).showToast();
+        }
+
+        // Load existing items with "Need" tag
+        async function loadNeededItems() {
+            try {
+                showLoading();
+                const { data, error } = await supabase
+                    .from('items')
+                    .select('*')
+                    .contains('tags', ['Need']);
+
+                if (error) throw error;
+
+                const shoppingList = document.getElementById('shoppingList');
+                shoppingList.innerHTML = ''; // Clear existing items
+
+                data.forEach(item => {
+                    addItemToDisplay(item);
+                });
+            } catch (error) {
+                showToast('Error loading items: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Add item to display
+        function addItemToDisplay(item) {
+            const shoppingItem = document.createElement('div');
+            shoppingItem.className = 'shopping-item';
+            shoppingItem.dataset.id = item.id;
+
+            shoppingItem.innerHTML = `
+                <img src="${item.img || 'https://placehold.co/300x200?text=Item'}" alt="${item.name}">
+                <div class="item-details">
+                    <p><strong>Name:</strong> ${item.name}</p>
+                    ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ''}
+                    <p><strong>Quantity:</strong> ${item.quantity}</p>
+                    <button class="delete-btn" onclick="deleteItem(${item.id})">Remove Item</button>
+                </div>
+            `;
+
+            document.getElementById('shoppingList').appendChild(shoppingItem);
+        }
+
+        // Delete item from database
+        async function deleteItem(id) {
+            if (!confirm('Are you sure you want to remove this item?')) return;
+
+            try {
+                showLoading();
+                const { error } = await supabase
+                    .from('items')
+                    .update({ tags: null })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                // Remove item from display
+                const itemElement = document.querySelector(`.shopping-item[data-id="${id}"]`);
+                if (itemElement) {
+                    itemElement.remove();
+                }
+                showToast('Item removed successfully');
+            } catch (error) {
+                showToast('Error removing item: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('shoppingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const itemName = document.getElementById('itemName').value;
+            const dimensions = document.getElementById('dimensions').value;
+            const quantity = document.getElementById('quantity').value;
+            const notes = document.getElementById('notes').value;
+
+            try {
+                showLoading();
+                const { data, error } = await supabase
+                    .from('items')
+                    .insert([
+                        {
+                            name: itemName,
+                            quantity: parseInt(quantity),
+                            notes: notes + (dimensions ? `\nDimensions: ${dimensions}` : ''),
+                            tags: ['Need'],
+                            img: 'https://placehold.co/300x200?text=Item' // Default image
+                        }
+                    ])
+                    .select();
+
+                if (error) throw error;
+
+                addItemToDisplay(data[0]);
+                showToast('Item added successfully');
+                this.reset();
+            } catch (error) {
+                showToast('Error adding item: ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Load items when page loads
+        document.addEventListener('DOMContentLoaded', loadNeededItems);
+    </script>
+</body>
+</html> 
