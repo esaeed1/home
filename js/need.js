@@ -108,6 +108,9 @@ async function loadNeededItems(filterTag = null) {
             return;
         }
 
+        // Update tag buttons based on available tags
+        updateTagButtons(sortedData);
+
         sortedData.forEach(item => {
             addItemToDisplay(item);
         });
@@ -119,6 +122,60 @@ async function loadNeededItems(filterTag = null) {
     } finally {
         hideLoading();
     }
+}
+
+// Update tag buttons based on available tags
+function updateTagButtons(items) {
+    const tagButtons = document.getElementById('tagButtons');
+    if (!tagButtons) return;
+
+    // Collect all unique tags
+    const uniqueTags = new Set();
+    items.forEach(item => {
+        if (Array.isArray(item.tags)) {
+            item.tags.forEach(tag => uniqueTags.add(tag));
+        }
+    });
+
+    // Create buttons for each tag
+    const buttons = Array.from(uniqueTags).map(tag => {
+        return `<button onclick="filterByTag('${tag}')" class="filter-btn" data-tag="${tag}">${tag}</button>`;
+    }).join('');
+
+    tagButtons.innerHTML = buttons;
+}
+
+// Filter tag buttons based on search input
+function filterTagButtons() {
+    const searchInput = document.getElementById('tagSearch');
+    const searchTerm = searchInput.value.toLowerCase();
+    const buttons = document.querySelectorAll('.tag-buttons .filter-btn');
+
+    buttons.forEach(button => {
+        const tag = button.dataset.tag.toLowerCase();
+        button.style.display = tag.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// Add tag filter functionality
+function filterByTag(tag) {
+    // Update active state of buttons
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        if (btn.dataset.tag === tag) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // If "All Items" is clicked, remove active state from all buttons
+    if (!tag) {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.filter-btn[onclick="loadNeededItems()"]').classList.add('active');
+    }
+
+    loadNeededItems(tag);
 }
 
 // Add item to display
@@ -216,11 +273,6 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
         hideLoading();
     }
 });
-
-// Add tag filter functionality
-function filterByTag(tag) {
-    loadNeededItems(tag);
-}
 
 // Load items when page loads
 document.addEventListener('DOMContentLoaded', () => {
