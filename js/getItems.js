@@ -18,10 +18,18 @@ async function fetchItems() {
             return;
         }
 
-        console.log('Fetched items:', data);
-        allItems = data;
-        displayItems(data);
-        populateTags(data);
+        // Filter out items with tag "Need" or UPC 0
+        const filteredData = data.filter(item => {
+            if (item.upc === 0) return false;
+            if (!item.tags) return true;
+            const tags = item.tags.split(',').map(tag => tag.trim().toLowerCase());
+            return !tags.includes('need');
+        });
+
+        console.log('Filtered items:', filteredData);
+        allItems = filteredData;
+        displayItems(filteredData);
+        populateTags(filteredData);
     } catch (err) {
         console.error('Fetch error:', err);
     }
@@ -53,7 +61,13 @@ function populateTags(items) {
     const uniqueTags = new Set();
     items.forEach(item => {
         if (item.tags) {
-            item.tags.split(',').forEach(tag => uniqueTags.add(tag.trim()));
+            item.tags.split(',').forEach(tag => {
+                const trimmedTag = tag.trim();
+                // Don't add "Need" tag to the filter options
+                if (trimmedTag.toLowerCase() !== 'need') {
+                    uniqueTags.add(trimmedTag);
+                }
+            });
         }
     });
 
