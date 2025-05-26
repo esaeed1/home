@@ -68,15 +68,21 @@ function showToast(message, type = 'success') {
 }
 
 // Load existing items with "Need" tag
-async function loadNeededItems() {
+async function loadNeededItems(filterTag = null) {
     try {
         showLoading();
         console.log('Fetching items from database...');
         
-        const { data, error } = await supabase
+        let query = supabase
             .from('items')
             .select('*')
             .eq('tags', 'Need');
+
+        if (filterTag) {
+            query = query.contains('tags', [filterTag]);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Supabase error:', error);
@@ -129,10 +135,16 @@ function addItemToDisplay(item) {
     shoppingItem.className = 'shopping-item';
     shoppingItem.dataset.id = item.id;
 
+    // Convert tags array to string for display
+    const tagsDisplay = Array.isArray(item.tags) 
+        ? item.tags.filter(tag => tag !== 'Need').join(', ')
+        : '';
+
     shoppingItem.innerHTML = `
         <div class="item-details">
             <p><strong>Name:</strong> ${item.name}</p>
             <p><strong>Quantity:</strong> ${item.quantity}</p>
+            ${tagsDisplay ? `<p><strong>Tags:</strong> ${tagsDisplay}</p>` : ''}
             ${item.notes ? `<p><strong>Notes:</strong><br>${item.notes.replace(/\n/g, '<br>')}</p>` : ''}
             <button class="delete-btn" onclick="deleteItem(${item.id})">Remove Item</button>
         </div>
@@ -151,13 +163,23 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
     const dimensions = document.getElementById('dimensions').value;
     const quantity = document.getElementById('quantity').value;
     const notes = document.getElementById('notes').value;
+    const tagsInput = document.getElementById('tags').value;
 
     if (!itemName || !quantity) {
         showToast('Please fill in all required fields', 'error');
         return;
     }
 
-    console.log('Form data:', { itemName, dimensions, quantity, notes });
+    // Process tags
+    const tags = ['Need']; // Always include 'Need' tag
+    if (tagsInput) {
+        const additionalTags = tagsInput.split(',')
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0);
+        tags.push(...additionalTags);
+    }
+
+    console.log('Form data:', { itemName, dimensions, quantity, notes, tags });
 
     try {
         showLoading();
@@ -170,7 +192,7 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
                     name: itemName,
                     quantity: parseInt(quantity),
                     notes: notes + (dimensions ? `\nDimensions: ${dimensions}` : ''),
-                    tags: 'Need',
+                    tags: tags,
                     // Default values for required fields
                     upc: 0,
                     img: '',
@@ -195,6 +217,11 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
         hideLoading();
     }
 });
+
+// Add tag filter functionality
+function filterByTag(tag) {
+    loadNeededItems(tag);
+}
 
 // Load items when page loads
 document.addEventListener('DOMContentLoaded', () => {
