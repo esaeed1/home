@@ -132,8 +132,8 @@ function addItemToDisplay(item) {
     shoppingItem.innerHTML = `
         <div class="item-details">
             <p><strong>Name:</strong> ${item.name}</p>
-            ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ''}
             <p><strong>Quantity:</strong> ${item.quantity}</p>
+            ${item.notes ? `<p><strong>Notes:</strong><br>${item.notes.replace(/\n/g, '<br>')}</p>` : ''}
             <button class="delete-btn" onclick="deleteItem(${item.id})">Remove Item</button>
         </div>
     `;
