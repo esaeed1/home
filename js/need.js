@@ -79,7 +79,8 @@ async function loadNeededItems(filterTag = null) {
             .eq('upc', 0);
 
         if (filterTag) {
-            query = query.contains('tags', [filterTag]);
+            // Filter items where tags string contains the filter tag
+            query = query.filter('tags', 'ilike', `%${filterTag}%`);
         }
 
         const { data, error } = await query;
@@ -132,8 +133,10 @@ function updateTagButtons(items) {
     // Collect all unique tags
     const uniqueTags = new Set();
     items.forEach(item => {
-        if (Array.isArray(item.tags)) {
-            item.tags.forEach(tag => uniqueTags.add(tag));
+        if (item.tags) {
+            // Split the comma-separated string into individual tags
+            const tags = item.tags.split(',').map(tag => tag.trim());
+            tags.forEach(tag => uniqueTags.add(tag));
         }
     });
 
@@ -192,10 +195,8 @@ function addItemToDisplay(item) {
     shoppingItem.className = 'shopping-item';
     shoppingItem.dataset.id = item.id;
 
-    // Convert tags array to string for display
-    const tagsDisplay = Array.isArray(item.tags) 
-        ? item.tags.join(', ')
-        : '';
+    // Display tags from comma-separated string
+    const tagsDisplay = item.tags ? item.tags : '';
 
     shoppingItem.innerHTML = `
         <div class="item-details">
@@ -227,14 +228,8 @@ document.getElementById('shoppingForm').addEventListener('submit', async functio
         return;
     }
 
-    // Process tags
-    const tags = [];
-    if (tagsInput) {
-        const additionalTags = tagsInput.split(',')
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0);
-        tags.push(...additionalTags);
-    }
+    // Process tags - keep as comma-separated string
+    const tags = tagsInput ? tagsInput.trim() : '';
 
     console.log('Form data:', { itemName, dimensions, quantity, notes, tags });
 
