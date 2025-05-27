@@ -110,14 +110,24 @@ function displayItems(items) {
     shoppingList.innerHTML = ''; // Clear existing items
 
     if (items.length === 0) {
-        shoppingList.innerHTML = '<p>No items in your shopping list yet.</p>';
+        shoppingList.innerHTML = '<p>No items match your current filters.</p>';
         return;
     }
+
+    // Sort items by quantity in descending order
+    items.sort((a, b) => b.quantity - a.quantity);
 
     items.forEach(item => {
         const shoppingItem = document.createElement('div');
         shoppingItem.className = 'shopping-item';
         shoppingItem.dataset.id = item.id;
+
+        // Determine priority based on quantity
+        if (item.quantity >= 5) {
+            shoppingItem.classList.add('high-priority');
+        } else if (item.quantity >= 3) {
+            shoppingItem.classList.add('medium-priority');
+        }
 
         // Filter out "Need" from tags display
         const tagsDisplay = item.tags 
@@ -129,10 +139,22 @@ function displayItems(items) {
 
         shoppingItem.innerHTML = `
             <div class="item-details">
-                <p><strong>Name:</strong> ${item.name}</p>
-                <p><strong>Quantity:</strong> ${item.quantity}</p>
-                ${tagsDisplay ? `<p><strong>Tags:</strong> ${tagsDisplay}</p>` : ''}
-                ${item.notes ? `<p><strong>Notes:</strong><br>${item.notes.replace(/\n/g, '<br>')}</p>` : ''}
+                <div class="item-header">
+                    <div class="item-name">${item.name}</div>
+                    <div class="quantity-badge">${item.quantity}</div>
+                </div>
+                ${tagsDisplay ? `
+                    <div class="item-tags">
+                        ${tagsDisplay.split(',').map(tag => `
+                            <span class="item-tag">${tag.trim()}</span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                ${item.notes ? `
+                    <div class="item-notes">
+                        ${item.notes.replace(/\n/g, '<br>')}
+                    </div>
+                ` : ''}
                 <button class="delete-btn" onclick="deleteItem(${item.id})">Remove Item</button>
             </div>
         `;
@@ -179,8 +201,52 @@ function populateTags(items) {
     });
 }
 
-// Filter items by selected tags
+// Filter items by selected tags and quantity
 function filterItemsByTags() {
+    const selectedTags = [];
+    const checkboxes = document.querySelectorAll('.tag-checkbox');
+    const quantityFilter = document.getElementById('quantityFilter').value;
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedTags.push(checkbox.id);
+        }
+    });
+
+    let filteredItems = allItems;
+
+    // Apply tag filtering
+    if (selectedTags.length > 0) {
+        filteredItems = filteredItems.filter(item => {
+            if (!item.tags) return false;
+            const itemTags = item.tags.split(',').map(tag => tag.trim());
+            return selectedTags.every(tag => itemTags.includes(tag));
+        });
+    }
+
+    // Apply quantity filtering
+    filteredItems = filterByQuantityValue(filteredItems, quantityFilter);
+
+    displayItems(filteredItems);
+}
+
+// Filter by quantity value
+function filterByQuantityValue(items, quantityFilter) {
+    switch (quantityFilter) {
+        case 'high':
+            return items.filter(item => item.quantity >= 5);
+        case 'medium':
+            return items.filter(item => item.quantity >= 3 && item.quantity <= 4);
+        case 'low':
+            return items.filter(item => item.quantity <= 2);
+        default:
+            return items;
+    }
+}
+
+// Filter by quantity
+window.filterByQuantity = function() {
+    const quantityFilter = document.getElementById('quantityFilter').value;
     const selectedTags = [];
     const checkboxes = document.querySelectorAll('.tag-checkbox');
 
@@ -190,18 +256,22 @@ function filterItemsByTags() {
         }
     });
 
-    const filteredItems = allItems.filter(item => {
-        if (!item.tags) return false;
-        const itemTags = item.tags.split(',').map(tag => tag.trim());
-        return selectedTags.every(tag => itemTags.includes(tag));
-    });
+    let filteredItems = allItems;
 
-    if (selectedTags.length === 0) {
-        displayItems(allItems);
-    } else {
-        displayItems(filteredItems);
+    // Apply tag filtering if any tags are selected
+    if (selectedTags.length > 0) {
+        filteredItems = filteredItems.filter(item => {
+            if (!item.tags) return false;
+            const itemTags = item.tags.split(',').map(tag => tag.trim());
+            return selectedTags.every(tag => itemTags.includes(tag));
+        });
     }
-}
+
+    // Apply quantity filtering
+    filteredItems = filterByQuantityValue(filteredItems, quantityFilter);
+
+    displayItems(filteredItems);
+};
 
 // Toggle tag filter visibility
 window.toggleTagFilter = function() {
