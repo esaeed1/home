@@ -27,6 +27,7 @@ async function fetchItems() {
         displayItems(data);
         populateTags(data);
         updateItemCount(data.length);
+        updateHeroStats(data.length);
         
         // Hide loading state
         showLoading(false);
@@ -55,8 +56,8 @@ function showLoading(show) {
 function showError(message) {
     const emptyState = document.getElementById('empty-state');
     const emptyIcon = emptyState.querySelector('.empty-icon i');
-    const emptyTitle = emptyState.querySelector('h3');
-    const emptyText = emptyState.querySelector('p');
+    const emptyTitle = emptyState.querySelector('.empty-title');
+    const emptyText = emptyState.querySelector('.empty-text');
     
     emptyIcon.className = 'fas fa-exclamation-triangle';
     emptyTitle.textContent = 'Error Loading Items';
@@ -67,6 +68,13 @@ function showError(message) {
 function updateItemCount(count) {
     const itemsCount = document.getElementById('items-count');
     itemsCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+}
+
+function updateHeroStats(count) {
+    const totalItems = document.getElementById('total-items');
+    if (totalItems) {
+        totalItems.textContent = count;
+    }
 }
 
 function displayItems(items) {
@@ -100,18 +108,32 @@ function displayItems(items) {
         // Create notes HTML
         const notesHTML = item.notes ? `<div class="item-notes">${item.notes}</div>` : '';
         
+        // Create info section
+        const infoHTML = `
+            <div class="item-info">
+                <div class="info-item">
+                    <div class="info-label">UPC</div>
+                    <div class="info-value">${item.upc || 'N/A'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Quantity</div>
+                    <div class="info-value">${item.quantity || 0}</div>
+                </div>
+            </div>
+        `;
+        
         itemCard.innerHTML = `
             <div class="item-badge">${item.id}</div>
-            <img src="${item.img || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+            <img src="${item.img || 'https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'}" 
                  alt="${item.name}" 
                  class="item-image"
-                 onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                 onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'">
             <div class="item-content">
                 <h3 class="item-title">${item.name}</h3>
                 <p class="item-description">
-                    <strong>UPC:</strong> ${item.upc || 'N/A'}<br>
-                    <strong>Quantity:</strong> ${item.quantity || 0}
+                    ${item.description || 'Premium Windows solution with advanced features and optimal performance.'}
                 </p>
+                ${infoHTML}
                 ${tagsHTML ? `<div class="item-tags">${tagsHTML}</div>` : ''}
                 ${notesHTML}
             </div>
@@ -175,6 +197,7 @@ function filterItemsByTags() {
 
     displayItems(filteredItems);
     updateItemCount(filteredItems.length);
+    updateHeroStats(filteredItems.length);
 }
 
 // Initialize when DOM is loaded
