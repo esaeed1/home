@@ -8,6 +8,9 @@ let allItems = [];
 
 async function fetchItems() {
     try {
+        // Show loading state
+        showLoading(true);
+        
         const { data, error } = await supabase
             .from('items')
             .select('*')
@@ -15,6 +18,7 @@ async function fetchItems() {
 
         if (error) {
             console.error('Supabase error:', error);
+            showError('Failed to load items. Please try again.');
             return;
         }
 
@@ -22,29 +26,97 @@ async function fetchItems() {
         allItems = data;
         displayItems(data);
         populateTags(data);
+        updateItemCount(data.length);
+        
+        // Hide loading state
+        showLoading(false);
     } catch (err) {
         console.error('Fetch error:', err);
+        showError('Network error. Please check your connection.');
+        showLoading(false);
     }
 }
 
+function showLoading(show) {
+    const loading = document.getElementById('loading');
+    const itemsGrid = document.getElementById('items-grid');
+    const emptyState = document.getElementById('empty-state');
+    
+    if (show) {
+        loading.style.display = 'flex';
+        itemsGrid.style.display = 'none';
+        emptyState.style.display = 'none';
+    } else {
+        loading.style.display = 'none';
+        itemsGrid.style.display = 'grid';
+    }
+}
+
+function showError(message) {
+    const emptyState = document.getElementById('empty-state');
+    const emptyIcon = emptyState.querySelector('.empty-icon i');
+    const emptyTitle = emptyState.querySelector('h3');
+    const emptyText = emptyState.querySelector('p');
+    
+    emptyIcon.className = 'fas fa-exclamation-triangle';
+    emptyTitle.textContent = 'Error Loading Items';
+    emptyText.textContent = message;
+    emptyState.style.display = 'block';
+}
+
+function updateItemCount(count) {
+    const itemsCount = document.getElementById('items-count');
+    itemsCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+}
+
 function displayItems(items) {
-    const itemGrid = document.getElementById('item-grid');
+    const itemGrid = document.getElementById('items-grid');
+    const emptyState = document.getElementById('empty-state');
+    
     itemGrid.innerHTML = '';
 
+    if (items.length === 0) {
+        emptyState.style.display = 'block';
+        itemGrid.style.display = 'none';
+        return;
+    }
+
+    emptyState.style.display = 'none';
+    itemGrid.style.display = 'grid';
+
     items.forEach(item => {
-        const itemCard = document.createElement('a');
-        itemCard.href = item.link;
-        itemCard.target = "_blank";
+        const itemCard = document.createElement('div');
         itemCard.className = 'item-card';
+        itemCard.onclick = () => {
+            if (item.link) {
+                window.open(item.link, '_blank');
+            }
+        };
+        
+        // Create tags HTML
+        const tagsHTML = item.tags ? 
+            item.tags.split(',').map(tag => `<span class="item-tag">${tag.trim()}</span>`).join('') : '';
+        
+        // Create notes HTML
+        const notesHTML = item.notes ? `<div class="item-notes">${item.notes}</div>` : '';
+        
         itemCard.innerHTML = `
-            <div class="item-id">${item.id}</div>
-            <img src="${item.img}" alt="${item.name}">
-            <h3>${item.name}</h3>
-            <p>UPC: ${item.upc}</p>
-            <p>Quantity: ${item.quantity}</p>
-            ${item.tags ? `<p class="item-tags">Tags: ${item.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join(', ')}</p>` : ''}
-            ${item.notes ? `<p class="item-notes">Notes: ${item.notes}</p>` : ''}
+            <div class="item-badge">${item.id}</div>
+            <img src="${item.img || 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                 alt="${item.name}" 
+                 class="item-image"
+                 onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+            <div class="item-content">
+                <h3 class="item-title">${item.name}</h3>
+                <p class="item-description">
+                    <strong>UPC:</strong> ${item.upc || 'N/A'}<br>
+                    <strong>Quantity:</strong> ${item.quantity || 0}
+                </p>
+                ${tagsHTML ? `<div class="item-tags">${tagsHTML}</div>` : ''}
+                ${notesHTML}
+            </div>
         `;
+        
         itemGrid.appendChild(itemCard);
     });
 }
@@ -57,50 +129,68 @@ function populateTags(items) {
         }
     });
 
-    const tagFilterContent = document.getElementById('tag-filter-content');
-    tagFilterContent.innerHTML = ''; // Clear current filter content
+    const filterContent = document.getElementById('filter-content');
+    filterContent.innerHTML = ''; // Clear current filter content
 
     uniqueTags.forEach(tag => {
         const checkboxContainer = document.createElement('div');
-        checkboxContainer.className = 'tag-checkbox-container';
+        checkboxContainer.className = 'filter-checkbox';
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.id = tag;
-        checkbox.className = 'tag-checkbox';
+        checkbox.id = `filter-${tag}`;
+        checkbox.className = 'filter-checkbox-input';
         checkbox.onclick = () => filterItemsByTags();
 
         const label = document.createElement('label');
-        label.setAttribute('for', tag);
+        label.setAttribute('for', `filter-${tag}`);
         label.textContent = tag;
 
         checkboxContainer.appendChild(checkbox);
         checkboxContainer.appendChild(label);
-        tagFilterContent.appendChild(checkboxContainer);
+        filterContent.appendChild(checkboxContainer);
     });
 }
 
 function filterItemsByTags() {
     const selectedTags = [];
-    const checkboxes = document.querySelectorAll('.tag-checkbox');
+    const checkboxes = document.querySelectorAll('.filter-checkbox-input');
 
     checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            selectedTags.push(checkbox.id);
+            selectedTags.push(checkbox.id.replace('filter-', ''));
         }
     });
 
-    const filteredItems = allItems.filter(item => {
-        if (!item.tags) return false;
-        const itemTags = item.tags.split(',').map(tag => tag.trim());
-        return selectedTags.every(tag => itemTags.includes(tag));
-    });
-
+    let filteredItems;
     if (selectedTags.length === 0) {
-        displayItems(allItems);
+        filteredItems = allItems;
     } else {
-        displayItems(filteredItems);
+        filteredItems = allItems.filter(item => {
+            if (!item.tags) return false;
+            const itemTags = item.tags.split(',').map(tag => tag.trim());
+            return selectedTags.every(tag => itemTags.includes(tag));
+        });
     }
+
+    displayItems(filteredItems);
+    updateItemCount(filteredItems.length);
 }
 
-document.addEventListener('DOMContentLoaded', fetchItems);
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    fetchItems();
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+});

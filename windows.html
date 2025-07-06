@@ -4,226 +4,498 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>Pro Windows </title>
+    <title>Pro Windows Store</title>
     <link rel="stylesheet" href="css/style1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .item-notes {
-            font-size: 0.9em;
-            color: #d9534f;
-            margin-top: 10px;
-            background-color: #f8d7da;
-            padding: 5px;
-            border-radius: 4px;
-            text-align: left;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
         }
 
-        header {
-            background-color: #007bff;
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            padding: 15px 10px;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero-section {
             text-align: center;
+            margin-bottom: 3rem;
+            color: white;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 1.5em;
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        main {
-            padding: 10px;
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
         }
 
-        .item-grid {
+        /* Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .filter-content {
+            display: none;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-content.open {
+            display: flex;
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-checkbox:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .filter-checkbox input {
+            accent-color: #667eea;
+        }
+
+        /* Items Grid */
+        .items-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .items-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .items-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .items-count {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
         }
 
         .item-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             position: relative;
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out;
             cursor: pointer;
         }
 
         .item-card:hover {
-            transform: scale(1.03);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .item-card img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
         }
 
-        .item-id {
+        .item-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #007bff;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            font-weight: bold;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            font-size: 14px;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.2em;
-            }
+        .item-content {
+            padding: 1.5rem;
+        }
 
-            .item-card {
-                padding: 8px;
-            }
+        .item-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
 
-            .item-card h3 {
-                font-size: 0.9em;
-            }
-
-            .item-card p {
-                font-size: 0.8em;
-            }
-
-            .item-id {
-                width: 25px;
-                height: 25px;
-                font-size: 12px;
-            }
+        .item-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
         }
 
         .item-tags {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        .item-tags .tag {
-            display: inline-block;
-            background-color: #f1f1f1;
-            color: #007bff;
-            padding: 2px 6px;
-            margin: 2px;
-            border-radius: 4px;
-            font-size: 0.8em;
-        }
-
-        .tag-filter {
-            margin-bottom: 20px;
-        }
-
-        .tag-checkbox {
-            margin-right: 10px;
-        }
-
-        .tag-filter label {
-            margin-right: 10px;
-            font-size: 1em;
-        }
-
-        .tag-filter {
-            margin-bottom: 20px;
-        }
-
-        .tag-checkbox-container {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 15px;
-            margin-bottom: 10px; /* Adjusted to control spacing between tags */
-        }
-
-        .tag-checkbox {
-            margin-right: 5px; /* Space between checkbox and label */
-        }
-
-        .tag-filter-button {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        .tag-filter-content {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .tag-filter-content.open {
             display: flex;
-            flex-wrap: wrap; /* Ensures horizontal layout with wrapping */
-            justify-content: flex-start; /* Aligns tags to the left */
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        .tag-filter-content .tag-checkbox-container {
-            margin-right: 15px; /* Adjust spacing between each tag */
-            margin-bottom: 10px; /* Adjusts vertical spacing when tags wrap to a new line */
+        .item-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
+        .item-notes {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+            border-radius: 8px;
+            color: #dc3545;
+            font-size: 0.9rem;
+        }
 
+        /* Footer */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-menu {
+                gap: 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-content {
+                flex-direction: column;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .items-title {
+                font-size: 1.5rem;
+            }
+
+            .item-card {
+                margin: 0 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
-<header>
-    <h1>Pro Windows</h1>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="contact.html">Contact</a>
-        <a href="items.html">Items</a>
-        <a href="social.html">Social</a>
-    </nav>
-</header>
-
-<main>
-    <section>
-        <h2>Filter by Tags</h2>
-        <button class="tag-filter-button" onclick="toggleTagFilter()">Tag Filter</button>
-        <div id="tag-filter" class="tag-filter">
-            <div id="tag-filter-content" class="tag-filter-content"></div>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="logo/pro windows logo.png" alt="Pro Windows Logo" class="logo">
+                <h1 class="brand-name">Pro Windows Store</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li><a href="items.html"><i class="fas fa-box"></i> Items</a></li>
+                    <li><a href="social.html"><i class="fas fa-share-alt"></i> Social</a></li>
+                </ul>
+            </nav>
         </div>
-    </section>
+    </header>
 
-    <section>
-        <h2>Our Items</h2>
-        <div class="item-grid" id="item-grid">
-            <!-- Dynamic Item Cards will be populated here -->
+    <div class="main-container">
+        <section class="hero-section">
+            <h1 class="hero-title">Discover Premium Windows Solutions</h1>
+            <p class="hero-subtitle">Explore our curated collection of high-quality Windows products and services</p>
+        </section>
+
+        <section class="filter-section">
+            <div class="filter-header">
+                <h2 class="filter-title"><i class="fas fa-filter"></i> Filter Products</h2>
+                <button class="filter-toggle" onclick="toggleFilter()">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Show Filters</span>
+                </button>
+            </div>
+            <div id="filter-content" class="filter-content">
+                <!-- Dynamic filter checkboxes will be populated here -->
+            </div>
+        </section>
+
+        <section class="items-section">
+            <div class="items-header">
+                <h2 class="items-title"><i class="fas fa-th-large"></i> Our Products</h2>
+                <div class="items-count" id="items-count">0 items</div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3>No products found</h3>
+                <p>Try adjusting your filters or check back later for new items.</p>
+            </div>
+            
+            <div class="items-grid" id="items-grid">
+                <!-- Dynamic item cards will be populated here -->
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">&copy; 2024 Pro Windows Store. All rights reserved.</p>
         </div>
-    </section>
-</main>
+    </footer>
 
-<footer>
-    <p>&copy; Pro Windows</p>
-</footer>
+    <script type="module" src="js/getItemsWindows.js"></script>
 
-<script type="module" src="js/getItemsWindows.js"></script>
+    <script>
+        function toggleFilter() {
+            const filterContent = document.getElementById('filter-content');
+            const toggleButton = document.querySelector('.filter-toggle span');
+            const icon = document.querySelector('.filter-toggle i');
+            
+            filterContent.classList.toggle('open');
+            
+            if (filterContent.classList.contains('open')) {
+                toggleButton.textContent = 'Hide Filters';
+                icon.className = 'fas fa-times';
+            } else {
+                toggleButton.textContent = 'Show Filters';
+                icon.className = 'fas fa-sliders-h';
+            }
+        }
 
-<script>
-    function toggleTagFilter() {
-        const tagContent = document.getElementById('tag-filter-content');
-        tagContent.classList.toggle('open');
-    }
-</script>
-
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
