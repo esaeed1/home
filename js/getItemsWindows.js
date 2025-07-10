@@ -29,6 +29,10 @@ async function fetchItems() {
         updateItemCount(data.length);
         updateHeroStats(data.length);
         
+        // Hide filtered counter on initial load
+        const filteredCounter = document.getElementById('filtered-counter');
+        filteredCounter.style.display = 'none';
+        
         // Hide loading state
         showLoading(false);
     } catch (err) {
@@ -105,8 +109,17 @@ function displayItems(items) {
         const tagsHTML = item.tags ? 
             item.tags.split(',').map(tag => `<span class="item-tag">${tag.trim()}</span>`).join('') : '';
         
-        // Create notes HTML
-        const notesHTML = item.notes ? `<div class="item-notes">${item.notes}</div>` : '';
+        // Create price display from notes field
+        const priceHTML = item.notes ? 
+            `<div class="price-display">
+                <div class="price-label">PRICE</div>
+                <div class="price-value">$${item.notes}</div>
+            </div>` : '';
+        
+        // Create enhanced quantity display
+        const quantityDisplay = item.quantity && item.quantity > 0 ? 
+            `<div class="quantity-display">${item.quantity} Available</div>` : 
+            `<div class="quantity-display" style="background: linear-gradient(135deg, #dc3545, #c82333);">Out of Stock</div>`;
         
         // Create info section
         const infoHTML = `
@@ -116,7 +129,7 @@ function displayItems(items) {
                     <div class="info-value">${item.upc || 'N/A'}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Quantity</div>
+                    <div class="info-label">Stock</div>
                     <div class="info-value">${item.quantity || 0}</div>
                 </div>
             </div>
@@ -133,9 +146,10 @@ function displayItems(items) {
                 <p class="item-description">
                     ${item.description || 'Premium Windows solution with advanced features and optimal performance.'}
                 </p>
+                ${quantityDisplay}
                 ${infoHTML}
                 ${tagsHTML ? `<div class="item-tags">${tagsHTML}</div>` : ''}
-                ${notesHTML}
+                ${priceHTML}
             </div>
         `;
         
@@ -187,12 +201,21 @@ function filterItemsByTags() {
     let filteredItems;
     if (selectedTags.length === 0) {
         filteredItems = allItems;
+        // Hide filtered counter when no filters are applied
+        const filteredCounter = document.getElementById('filtered-counter');
+        filteredCounter.style.display = 'none';
     } else {
         filteredItems = allItems.filter(item => {
             if (!item.tags) return false;
             const itemTags = item.tags.split(',').map(tag => tag.trim());
             return selectedTags.every(tag => itemTags.includes(tag));
         });
+        
+        // Show filtered counter when filters are applied
+        const filteredCounter = document.getElementById('filtered-counter');
+        const filteredCount = document.getElementById('filtered-count');
+        filteredCounter.style.display = 'inline-flex';
+        filteredCount.textContent = filteredItems.length;
     }
 
     displayItems(filteredItems);
