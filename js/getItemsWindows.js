@@ -26,7 +26,7 @@ async function fetchItems() {
         allItems = data;
         displayItems(data);
         populateTags(data);
-        updateItemCount(data.length);
+        updateItemCountAndStock(data);
         updateHeroStats(data.length);
         
         // Hide filtered counter on initial load
@@ -69,9 +69,18 @@ function showError(message) {
     emptyState.style.display = 'block';
 }
 
-function updateItemCount(count) {
+function updateItemCountAndStock(items) {
     const itemsCount = document.getElementById('items-count');
-    itemsCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+    const filteredCounter = document.getElementById('filtered-counter');
+    const filteredCount = document.getElementById('filtered-count');
+
+    const numSizes = items.length;
+    const totalWindows = items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
+
+    itemsCount.textContent = `${numSizes} Size${numSizes !== 1 ? 's' : ''} · ${totalWindows} Window${totalWindows !== 1 ? 's' : ''}`;
+    if (filteredCounter) {
+        filteredCount.textContent = `${numSizes} Size${numSizes !== 1 ? 's' : ''} · ${totalWindows} Window${totalWindows !== 1 ? 's' : ''}`;
+    }
 }
 
 function updateHeroStats(count) {
@@ -219,7 +228,7 @@ function filterItemsByTags() {
     }
 
     displayItems(filteredItems);
-    updateItemCount(filteredItems.length);
+    updateItemCountAndStock(filteredItems);
     updateHeroStats(filteredItems.length);
 }
 
