@@ -147,9 +147,11 @@
             <h3>Contact Home & Labor Supplies</h3>
 
             <p class="campaign-description">
-                Submit this form to contact Home & Labor Supplies and
-                optionally sign up for SMS updates regarding orders,
-                customer support, account notifications, and promotional offers.
+                Submit this form to contact Home & Labor Supplies and optionally
+                sign up to receive informational SMS messages regarding your
+                inquiries, orders, delivery notifications, customer support,
+                appointment reminders, and account notifications.
+                No marketing or promotional messages will be sent.
             </p>
 
             <form id="contactForm" action="/submit-optin" method="POST">
@@ -185,7 +187,6 @@
                     rows="5"
                 ></textarea>
 
-                <!-- TRANSACTIONAL CONSENT -->
                 <div class="checkbox-wrap">
                     <input
                         type="checkbox"
@@ -194,37 +195,19 @@
                     >
 
                     <label for="transactionalConsent">
-                        By checking this box, you agree to receive
-                        informational SMS messages from Home & Labor Supplies,
-                        including order updates, delivery notifications,
-                        customer support communications, appointment reminders,
-                        and account alerts.
+                        By checking this box, you consent to receive
+                        informational SMS messages from Home & Labor Supplies
+                        regarding your inquiries, orders, deliveries,
+                        customer support, appointment reminders, and account
+                        notifications.
 
                         Message frequency varies.
                         Message and data rates may apply.
                         Reply STOP to opt out.
                         Reply HELP for help.
-                    </label>
-                </div>
 
-                <!-- MARKETING CONSENT -->
-                <div class="checkbox-wrap">
-                    <input
-                        type="checkbox"
-                        id="marketingConsent"
-                        name="marketingConsent"
-                    >
-
-                    <label for="marketingConsent">
-                        By checking this box, you agree to receive
-                        promotional SMS messages from Home & Labor Supplies,
-                        including sales announcements, discounts, special
-                        offers, product updates, and marketing communications.
-
-                        Message frequency varies.
-                        Message and data rates may apply.
-                        Reply STOP to opt out.
-                        Reply HELP for help.
+                        SMS consent is not shared with third parties or
+                        affiliates for marketing purposes.
                     </label>
                 </div>
 
@@ -232,7 +215,6 @@
                     SMS consent is not a condition of purchase.
                 </p>
 
-                <!-- TERMS -->
                 <div class="checkbox-wrap">
                     <input
                         type="checkbox"
@@ -261,7 +243,6 @@
 
         </div>
 
-        <!-- SUCCESS POPUP -->
         <div class="popup" id="successPopup">
             <div class="popup-content">
 
@@ -295,23 +276,12 @@
         const transactional =
             document.getElementById("transactionalConsent").checked;
 
-        const marketing =
-            document.getElementById("marketingConsent").checked;
-
         let message =
             "Thank you! Your form was submitted successfully.";
 
-        if (transactional && marketing) {
+        if (transactional) {
             message +=
-                " You have opted in to both informational and promotional SMS messages.";
-        }
-        else if (transactional) {
-            message +=
-                " You have opted in to informational SMS messages.";
-        }
-        else if (marketing) {
-            message +=
-                " You have opted in to promotional SMS messages.";
+                " You have opted in to receive informational SMS messages.";
         }
 
         popupMessage.innerText = message;
@@ -323,19 +293,18 @@
 
         Remove e.preventDefault();
 
-        Then submit to your backend and store:
+        Submit to your backend and store:
 
         - name
         - phone
         - email
         - message
         - transactionalConsent
-        - marketingConsent
         - IP address
         - User Agent
         - Timestamp
 
-        for Twilio compliance records.
+        Retain these records for Twilio/A2P compliance.
         */
     });
 
