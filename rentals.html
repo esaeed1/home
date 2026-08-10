@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Equipment Rentals - Home & Labor Supplies</title>
+    <link rel="stylesheet" href="css/style1.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px 16px 40px;
+        }
+
+        .rentals-hero {
+            text-align: center;
+            padding: 36px 16px 28px;
+        }
+
+        .rentals-hero h2 {
+            margin: 0 0 10px;
+            font-size: 2em;
+            color: #0A2E5C;
+        }
+
+        .rentals-hero p {
+            max-width: 640px;
+            margin: 0 auto 20px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .price-glance {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .price-chip {
+            background: #fff;
+            border: 1px solid #d9e3f0;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            color: #24344d;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .price-chip strong {
+            color: #007bff;
+        }
+
+        .rental-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .rental-item-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        @media (max-width: 760px) {
+            .rental-item-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rental-gallery {
+            padding: 20px;
+            border-right: 1px solid #eef1f5;
+        }
+
+        @media (max-width: 760px) {
+            .rental-gallery {
+                border-right: none;
+                border-bottom: 1px solid #eef1f5;
+            }
+        }
+
+        .gallery-main {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #f4f6f8;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+        }
+
+        .gallery-main img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .gallery-thumbs img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+            background: #f4f6f8;
+        }
+
+        .gallery-thumbs img.active {
+            border-color: #007bff;
+        }
+
+        .rental-details {
+            padding: 24px 24px 28px;
+        }
+
+        .rental-details h3 {
+            margin: 0 0 4px;
+            font-size: 1.4em;
+            color: #0A2E5C;
+        }
+
+        .rental-brand {
+            font-size: 0.85em;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+
+        .rental-prices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0 16px;
+        }
+
+        .price-badge {
+            display: inline-flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 10px;
+            line-height: 1.2;
+        }
+
+        .price-badge .amount {
+            font-size: 1.25em;
+            font-weight: 700;
+        }
+
+        .price-badge .label {
+            font-size: 0.75em;
+            opacity: 0.9;
+        }
+
+        .rental-desc {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92em;
+            margin-bottom: 18px;
+        }
+
+        .specs-table td {
+            padding: 7px 8px;
+            border-bottom: 1px solid #edf1f6;
+            vertical-align: top;
+        }
+
+        .specs-table td:first-child {
+            font-weight: 600;
+            color: #2d3748;
+            width: 42%;
+        }
+
+        .specs-table td:last-child {
+            color: #4a5568;
+        }
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .rent-cta {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+        .rent-cta:hover {
+            background-color: #0062cc;
+        }
+
+        .rent-cta.secondary {
+            background-color: #fff;
+            color: #007bff;
+            border: 1.5px solid #007bff;
+        }
+
+        .rent-cta.secondary:hover {
+            background-color: #eef6ff;
+        }
+
+        .how-it-works {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-bottom: 32px;
+        }
+
+        .how-it-works h3 {
+            margin-top: 0;
+            color: #0A2E5C;
+        }
+
+        .how-it-works ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 18, 30, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 2em;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-size: 2.5em;
+            cursor: pointer;
+            padding: 0 16px;
+            user-select: none;
+        }
+
+        .lightbox-prev { left: 6px; }
+        .lightbox-next { right: 6px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Home & Labor Supplies</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="items.html">Items</a>
+        <a href="rentals.html">Rentals</a>
+        <a href="social.html">Social</a>
+    </nav>
+</header>
+
+<main>
+    <section class="rentals-hero">
+        <h2>Equipment Rentals</h2>
+        <p>Daily rentals for hauling and plumbing jobs. Call, text, or use the contact form to check availability and set up pickup at 14854 W Grand River Ave, Detroit, MI 48227.</p>
+        <div class="price-glance">
+            <span class="price-chip">Trailer &mdash; <strong>$50/day</strong></span>
+            <span class="price-chip">Electric Eel Snake &mdash; <strong>$50/day</strong></span>
+            <span class="price-chip">Sewer Camera alone &mdash; <strong>$35/day</strong></span>
+            <span class="price-chip">Sewer Camera + Snake combo &mdash; <strong>$75/day</strong></span>
+        </div>
+    </section>
+
+    <!-- ================= TRAILER ================= -->
+    <section class="rental-item" id="trailer">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="trailer">
+                    <img src="img/rentals/trailer/placeholder.svg" alt="8 by 12 utility trailer" id="trailer-main-img">
+                </div>
+                <div class="gallery-thumbs" id="trailer-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>8&times;12 Utility Trailer</h3>
+                <div class="rental-brand">Single-axle mesh-side utility trailer</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">A single-axle utility trailer with mesh-cage side rails and a rear loading gate &mdash; good for hauling yard waste, scrap, appliances, furniture, or equipment.</p>
+                <table class="specs-table">
+                    <tr><td>Deck size</td><td>Approx. 8 ft &times; 12 ft</td></tr>
+                    <tr><td>Axle</td><td>Single axle, road-legal trailer tires</td></tr>
+                    <tr><td>Sides</td><td>Mesh-cage rails around the bed</td></tr>
+                    <tr><td>Floor</td><td>Wood plank deck</td></tr>
+                    <tr><td>Loading</td><td>Rear swing/mesh gate doubles as a ramp</td></tr>
+                    <tr><td>Extras</td><td>Front-mounted toolbox, spare tire, safety chains, tail lights</td></tr>
+                    <tr><td>Hitch</td><td>Standard ball coupler &mdash; confirm your tow vehicle's hitch &amp; capacity before pickup</td></tr>
+                </table>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SEWER CAMERA ================= -->
+    <section class="rental-item" id="sewer-camera">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="sewer-cam">
+                    <img src="img/rentals/sewer-cam/1.jpg" alt="SYOWNFS sewer inspection camera" id="sewer-cam-main-img">
+                </div>
+                <div class="gallery-thumbs" id="sewer-cam-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Sewer Inspection Camera</h3>
+                <div class="rental-brand">Brand: SYOWNFS &mdash; 4.3" DVR Pipe Inspection Camera (66ft/20m)</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$35</span><span class="label">per day, alone</span></span>
+                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, with Eel Snake</span></span>
+                </div>
+                <p class="rental-desc">A 4.3" color DVR sewer camera on a 66 ft fiberglass push-rod for spotting clogs, roots, and pipe damage before you dig or dispatch a crew. Records video and photos straight to the included memory card.</p>
+                <table class="specs-table">
+                    <tr><td>Cable length</td><td>66 ft / 20 m fiberglass push-rod (4.9mm dia.), anti-corrosion/cold/tensile</td></tr>
+                    <tr><td>Camera head</td><td>0.9 in / 22mm, #304 stainless steel housing, IP68 waterproof</td></tr>
+                    <tr><td>Lighting</td><td>12 adjustable LEDs, 145&deg; viewing angle</td></tr>
+                    <tr><td>Display</td><td>4.3" color IPS LCD monitor with sun-visor, 1000TVL</td></tr>
+                    <tr><td>Recording</td><td>Built-in DVR, records to included 16GB card</td></tr>
+                    <tr><td>Battery</td><td>4500mAh lithium, 4&ndash;6 hrs continuous use, on-screen battery level</td></tr>
+                    <tr><td>Included</td><td>Display unit, camera head, power adapter, connecting cable, wheel guide, 16GB card, screwdriver</td></tr>
+                </table>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ELECTRIC EEL SNAKE ================= -->
+    <section class="rental-item" id="eel-snake">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="eel-snake">
+                    <img src="img/rentals/eel-snake/1.jpg" alt="Electric Eel Model Z5 drain cleaning machine" id="eel-snake-main-img">
+                </div>
+                <div class="gallery-thumbs" id="eel-snake-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Electric Eel Drain Snake</h3>
+                <div class="rental-brand">Electric Eel &mdash; Model Z5 open-cage drain cleaning machine</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, with sewer camera</span></span>
+                </div>
+                <p class="rental-desc">An electric drum-style drain snake for clearing clogged sewer and drain lines. Open-cage design makes it quick to inspect and clean the cable between runs.</p>
+                <table class="specs-table">
+                    <tr><td>Cleans</td><td>1-1/4 in &ndash; 3 in diameter lines, up to 75 ft</td></tr>
+                    <tr><td>Cable</td><td>1/2 in galvanized aircraft wire inner-core cable, 75 ft standard</td></tr>
+                    <tr><td>Cable length options</td><td>50 ft or 75 ft</td></tr>
+                    <tr><td>Min / max drain size</td><td>1-1/4 in / 3 in</td></tr>
+                    <tr><td>Power</td><td>Electric, 1/3 HP</td></tr>
+                    <tr><td>Frame</td><td>Upright frame on large 10" wheels with folding handle</td></tr>
+                    <tr><td>Features</td><td>Open cable cage, built-in drum shaft slip clutch, steel guide tube/inner drum</td></tr>
+                </table>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <h3>How Rentals Work</h3>
+        <ul>
+            <li>Call, text, or use the <a href="contact.html">contact form</a> to check availability.</li>
+            <li>Pickup &amp; return at 14854 W Grand River Ave, Detroit, MI 48227.</li>
+            <li>Rent the sewer camera and the drain snake together for the combo rate.</li>
+        </ul>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Home & Labor Supplies. All rights reserved.</p>
+</footer>
+
+<div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightbox-close">&times;</span>
+    <span class="lightbox-nav lightbox-prev" id="lightbox-prev">&#8249;</span>
+    <img id="lightbox-img" src="" alt="">
+    <span class="lightbox-nav lightbox-next" id="lightbox-next">&#8250;</span>
+</div>
+
+<script>
+    // To add more photos later, just add filenames to these arrays
+    // (drop the matching image files into the folder listed for each item).
+    const galleries = {
+        'trailer': {
+            folder: 'img/rentals/trailer/',
+            files: ['placeholder.svg'],
+            current: 0
+        },
+        'sewer-cam': {
+            folder: 'img/rentals/sewer-cam/',
+            files: ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'],
+            current: 0
+        },
+        'eel-snake': {
+            folder: 'img/rentals/eel-snake/',
+            files: ['1.jpg', '2.jpg'],
+            current: 0
+        }
+    };
+
+    let activeGalleryKey = null;
+
+    function buildGallery(key) {
+        const config = galleries[key];
+        const mainImg = document.getElementById(key + '-main-img');
+        const thumbsWrap = document.getElementById(key + '-thumbs');
+        const images = config.files.map(f => config.folder + f);
+
+        thumbsWrap.innerHTML = '';
+        images.forEach((src, i) => {
+            const thumb = document.createElement('img');
+            thumb.src = src;
+            thumb.alt = '';
+            if (i === 0) thumb.classList.add('active');
+            thumb.addEventListener('click', () => setActive(key, i));
+            thumbsWrap.appendChild(thumb);
+        });
+
+        mainImg.parentElement.addEventListener('click', () => openLightbox(key, config.current));
+    }
+
+    function setActive(key, index) {
+        const config = galleries[key];
+        config.current = index;
+        const images = config.files.map(f => config.folder + f);
+        const mainImg = document.getElementById(key + '-main-img');
+        mainImg.src = images[index];
+
+        const thumbsWrap = document.getElementById(key + '-thumbs');
+        Array.from(thumbsWrap.children).forEach((el, i) => {
+            el.classList.toggle('active', i === index);
+        });
+    }
+
+    Object.keys(galleries).forEach(buildGallery);
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    function openLightbox(key, index) {
+        activeGalleryKey = key;
+        setActive(key, index);
+        showLightboxImage();
+        lightbox.classList.add('open');
+    }
+
+    function showLightboxImage() {
+        const config = galleries[activeGalleryKey];
+        const images = config.files.map(f => config.folder + f);
+        lightboxImg.src = images[config.current];
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', () => {
+        lightbox.classList.remove('open');
+    });
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) lightbox.classList.remove('open');
+    });
+
+    document.getElementById('lightbox-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const config = galleries[activeGalleryKey];
+        setActive(activeGalleryKey, (config.current - 1 + config.files.length) % config.files.length);
+        showLightboxImage();
+    });
+
+    document.getElementById('lightbox-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const config = galleries[activeGalleryKey];
+        setActive(activeGalleryKey, (config.current + 1) % config.files.length);
+        showLightboxImage();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') lightbox.classList.remove('open');
+        if (e.key === 'ArrowLeft') document.getElementById('lightbox-prev').click();
+        if (e.key === 'ArrowRight') document.getElementById('lightbox-next').click();
+    });
+</script>
+
+</body>
+</html>
