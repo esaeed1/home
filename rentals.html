@@ -122,6 +122,31 @@
             display: block;
         }
 
+        .split-gallery {
+            display: flex;
+            gap: 4px;
+            cursor: default;
+        }
+
+        .split-pane {
+            flex: 1;
+            aspect-ratio: 4 / 3;
+            background: #f4f6f8;
+            overflow: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+        }
+
+        .split-pane img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .gallery-thumbs {
             display: flex;
             gap: 8px;
@@ -192,6 +217,39 @@
             color: #4a5568;
             line-height: 1.6;
             margin-bottom: 16px;
+        }
+
+        .combo-link {
+            font-size: 0.88em;
+            color: #4a5568;
+            margin: -8px 0 16px;
+        }
+
+        .combo-link a {
+            color: #007bff;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .combo-link a:hover {
+            text-decoration: underline;
+        }
+
+        .combo-item {
+            border: 1.5px solid #007bff;
+        }
+
+        .combo-tag {
+            display: inline-block;
+            background: #eaf3ff;
+            color: #0056b3;
+            font-size: 0.75em;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 8px;
         }
 
         .specs-table {
@@ -333,6 +391,7 @@
         <p>Daily rentals for hauling and plumbing jobs. Call, text, or use the contact form to check availability and set up pickup at 14854 W Grand River Ave, Detroit, MI 48227.</p>
         <div class="price-glance">
             <span class="price-chip">Trailer &mdash; <strong>$50/day</strong></span>
+            <span class="price-chip">Pressure Washer &mdash; <strong>$40/day</strong></span>
             <span class="price-chip">Electric Eel Snake &mdash; <strong>$50/day</strong></span>
             <span class="price-chip">Sewer Camera alone &mdash; <strong>$35/day</strong></span>
             <span class="price-chip">Sewer Camera + Snake combo &mdash; <strong>$75/day</strong></span>
@@ -344,25 +403,57 @@
         <div class="rental-item-grid">
             <div class="rental-gallery">
                 <div class="gallery-main" data-gallery="trailer">
-                    <img src="img/rentals/trailer/placeholder.svg" alt="8 by 12 utility trailer" id="trailer-main-img">
+                    <img src="img/rentals/trailer/2.jpg" alt="12 foot utility trailer, 75 inches wide" id="trailer-main-img">
                 </div>
                 <div class="gallery-thumbs" id="trailer-thumbs"></div>
             </div>
             <div class="rental-details">
-                <h3>8&times;12 Utility Trailer</h3>
-                <div class="rental-brand">Single-axle mesh-side utility trailer</div>
+                <h3>12&prime; Utility Trailer</h3>
+                <div class="rental-brand">Single-axle mesh-side utility trailer &mdash; 12 ft long, 75 in wide</div>
                 <div class="rental-prices">
                     <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
                 </div>
                 <p class="rental-desc">A single-axle utility trailer with mesh-cage side rails and a rear loading gate &mdash; good for hauling yard waste, scrap, appliances, furniture, or equipment.</p>
                 <table class="specs-table">
-                    <tr><td>Deck size</td><td>Approx. 8 ft &times; 12 ft</td></tr>
+                    <tr><td>Deck size</td><td>12 ft long &times; 75 in wide</td></tr>
                     <tr><td>Axle</td><td>Single axle, road-legal trailer tires</td></tr>
                     <tr><td>Sides</td><td>Mesh-cage rails around the bed</td></tr>
                     <tr><td>Floor</td><td>Wood plank deck</td></tr>
                     <tr><td>Loading</td><td>Rear swing/mesh gate doubles as a ramp</td></tr>
                     <tr><td>Extras</td><td>Front-mounted toolbox, spare tire, safety chains, tail lights</td></tr>
                     <tr><td>Hitch</td><td>Standard ball coupler &mdash; confirm your tow vehicle's hitch &amp; capacity before pickup</td></tr>
+                </table>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PRESSURE WASHER ================= -->
+    <section class="rental-item" id="pressure-washer">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="pressure-washer">
+                    <img src="img/rentals/pressure-washer/1.webp" alt="DeWalt DXPW3324I gas pressure washer with Honda GCV200 engine" id="pressure-washer-main-img">
+                </div>
+                <div class="gallery-thumbs" id="pressure-washer-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Gas Pressure Washer</h3>
+                <div class="rental-brand">DeWalt DXPW3324I &mdash; 3300 PSI / 2.4 GPM, Honda GCV200 engine</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$40</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">A commercial-grade gas pressure washer for decks, siding, driveways, fences, paint prep, and graffiti removal. Idle-down technology quiets the engine and saves fuel whenever the trigger isn't pulled.</p>
+                <table class="specs-table">
+                    <tr><td>Pressure / flow</td><td>3300 PSI @ 2.4 GPM</td></tr>
+                    <tr><td>Engine</td><td>Honda GCV200 (200cc), auto choke, low-oil shutdown</td></tr>
+                    <tr><td>Pump</td><td>Axial cam pump with thermal relief valve, maintenance-free crankcase</td></tr>
+                    <tr><td>Hose</td><td>1/4 in &times; 50 ft high-pressure hose</td></tr>
+                    <tr><td>Extras</td><td>Idle-down auto technology, soap tank included, 12 in tires for mobility</td></tr>
+                    <tr><td>Size / weight</td><td>22 in H &times; 21.5 in W &times; 23 in D, approx. 73 lbs</td></tr>
                 </table>
                 <div class="cta-row">
                     <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
@@ -385,10 +476,10 @@
                 <h3>Sewer Inspection Camera</h3>
                 <div class="rental-brand">Brand: SYOWNFS &mdash; 4.3" DVR Pipe Inspection Camera (66ft/20m)</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$35</span><span class="label">per day, alone</span></span>
-                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, with Eel Snake</span></span>
+                    <span class="price-badge"><span class="amount">$35</span><span class="label">per day</span></span>
                 </div>
                 <p class="rental-desc">A 4.3" color DVR sewer camera on a 66 ft fiberglass push-rod for spotting clogs, roots, and pipe damage before you dig or dispatch a crew. Records video and photos straight to the included memory card.</p>
+                <p class="combo-link">Diagnosing <em>and</em> clearing a clog? See the <a href="#combo">Camera + Snake combo for $75/day</a>.</p>
                 <table class="specs-table">
                     <tr><td>Cable length</td><td>66 ft / 20 m fiberglass push-rod (4.9mm dia.), anti-corrosion/cold/tensile</td></tr>
                     <tr><td>Camera head</td><td>0.9 in / 22mm, #304 stainless steel housing, IP68 waterproof</td></tr>
@@ -420,9 +511,9 @@
                 <div class="rental-brand">Electric Eel &mdash; Model Z5 open-cage drain cleaning machine</div>
                 <div class="rental-prices">
                     <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
-                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, with sewer camera</span></span>
                 </div>
                 <p class="rental-desc">An electric drum-style drain snake for clearing clogged sewer and drain lines. Open-cage design makes it quick to inspect and clean the cable between runs.</p>
+                <p class="combo-link">Want to see the line before and after clearing it? See the <a href="#combo">Camera + Snake combo for $75/day</a>.</p>
                 <table class="specs-table">
                     <tr><td>Cleans</td><td>1-1/4 in &ndash; 3 in diameter lines, up to 75 ft</td></tr>
                     <tr><td>Cable</td><td>1/2 in galvanized aircraft wire inner-core cable, 75 ft standard</td></tr>
@@ -440,12 +531,48 @@
         </div>
     </section>
 
+    <!-- ================= COMBO: CAMERA + SNAKE ================= -->
+    <section class="rental-item combo-item" id="combo">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main split-gallery">
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/sewer-cam/1.jpg')">
+                        <img src="img/rentals/sewer-cam/1.jpg" alt="SYOWNFS sewer inspection camera">
+                    </div>
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/eel-snake/1.jpg')">
+                        <img src="img/rentals/eel-snake/1.jpg" alt="Electric Eel Model Z5 drain snake">
+                    </div>
+                </div>
+            </div>
+            <div class="rental-details">
+                <span class="combo-tag">Bundle &amp; Save</span>
+                <h3>Sewer Camera + Electric Eel Snake Combo</h3>
+                <div class="rental-brand">SYOWNFS sewer camera &amp; Electric Eel Model Z5, rented together</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, both tools</span></span>
+                </div>
+                <p class="rental-desc">Find the clog with the camera, then clear it with the snake &mdash; one trip, one daily rate. Renting both separately runs $85/day ($35 camera + $50 snake), so the combo saves $10/day.</p>
+                <table class="specs-table">
+                    <tr><td>Includes</td><td>SYOWNFS 4.3" sewer camera (66 ft) + Electric Eel Model Z5 drain snake</td></tr>
+                    <tr><td>Camera reach</td><td>66 ft / 20 m, DVR recording to included 16GB card</td></tr>
+                    <tr><td>Snake clears</td><td>1-1/4 in &ndash; 3 in diameter lines, up to 75 ft</td></tr>
+                    <tr><td>Best for</td><td>Diagnosing a clog on camera, then clearing it immediately with the snake</td></tr>
+                    <tr><td>Rented separately</td><td>Camera $35/day + Snake $50/day = $85/day</td></tr>
+                </table>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="how-it-works">
         <h3>How Rentals Work</h3>
         <ul>
             <li>Call, text, or use the <a href="contact.html">contact form</a> to check availability.</li>
             <li>Pickup &amp; return at 14854 W Grand River Ave, Detroit, MI 48227.</li>
-            <li>Rent the sewer camera and the drain snake together for the combo rate.</li>
+            <li>Rent the <a href="#combo">sewer camera and drain snake together</a> for $75/day instead of $85/day separately.</li>
         </ul>
     </section>
 </main>
@@ -467,7 +594,12 @@
     const galleries = {
         'trailer': {
             folder: 'img/rentals/trailer/',
-            files: ['placeholder.svg'],
+            files: ['2.jpg', '1.jpg', '3.jpg', '4.jpg'],
+            current: 0
+        },
+        'pressure-washer': {
+            folder: 'img/rentals/pressure-washer/',
+            files: ['1.webp', '4.webp', '6.webp', '3.webp'],
             current: 0
         },
         'sewer-cam': {
@@ -535,6 +667,13 @@
         lightboxImg.src = images[config.current];
     }
 
+    // Single, non-gallery image (used by the combo card's side-by-side photos)
+    function openSingleImage(src) {
+        activeGalleryKey = null;
+        lightboxImg.src = src;
+        lightbox.classList.add('open');
+    }
+
     document.getElementById('lightbox-close').addEventListener('click', () => {
         lightbox.classList.remove('open');
     });
@@ -545,6 +684,7 @@
 
     document.getElementById('lightbox-prev').addEventListener('click', (e) => {
         e.stopPropagation();
+        if (!activeGalleryKey) return;
         const config = galleries[activeGalleryKey];
         setActive(activeGalleryKey, (config.current - 1 + config.files.length) % config.files.length);
         showLightboxImage();
@@ -552,6 +692,7 @@
 
     document.getElementById('lightbox-next').addEventListener('click', (e) => {
         e.stopPropagation();
+        if (!activeGalleryKey) return;
         const config = galleries[activeGalleryKey];
         setActive(activeGalleryKey, (config.current + 1) % config.files.length);
         showLightboxImage();
