@@ -104,6 +104,7 @@
         }
 
         .gallery-main {
+            position: relative;
             width: 100%;
             aspect-ratio: 4 / 3;
             background: #f4f6f8;
@@ -121,6 +122,33 @@
             object-fit: contain;
             display: block;
         }
+
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.3em;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            padding: 0;
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .gallery-nav-prev { left: 8px; }
+        .gallery-nav-next { right: 8px; }
 
         .split-gallery {
             display: flex;
@@ -836,6 +864,31 @@
         });
 
         mainImg.parentElement.addEventListener('click', () => openLightbox(key, config.current));
+
+        if (images.length > 1) {
+            const prevBtn = document.createElement('button');
+            prevBtn.type = 'button';
+            prevBtn.className = 'gallery-nav-btn gallery-nav-prev';
+            prevBtn.innerHTML = '&#8249;';
+            prevBtn.setAttribute('aria-label', 'Previous photo');
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setActive(key, (config.current - 1 + images.length) % images.length);
+            });
+
+            const nextBtn = document.createElement('button');
+            nextBtn.type = 'button';
+            nextBtn.className = 'gallery-nav-btn gallery-nav-next';
+            nextBtn.innerHTML = '&#8250;';
+            nextBtn.setAttribute('aria-label', 'Next photo');
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setActive(key, (config.current + 1) % images.length);
+            });
+
+            mainImg.parentElement.appendChild(prevBtn);
+            mainImg.parentElement.appendChild(nextBtn);
+        }
     }
 
     function setActive(key, index) {
