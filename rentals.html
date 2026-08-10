@@ -147,6 +147,17 @@
             display: block;
         }
 
+        .grid-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            cursor: default;
+        }
+
+        .grid-gallery .split-pane {
+            aspect-ratio: 1 / 1;
+        }
+
         .gallery-thumbs {
             display: flex;
             gap: 8px;
@@ -392,7 +403,11 @@
         <div class="price-glance">
             <span class="price-chip">Trailer &mdash; <strong>$50/day</strong></span>
             <span class="price-chip">Pressure Washer &mdash; <strong>$40/day</strong></span>
-            <span class="price-chip">Chainsaw + Pole Saw Combo (4 tools) &mdash; <strong>$35/day</strong></span>
+            <span class="price-chip">Gas Chainsaw &mdash; <strong>$25/day</strong></span>
+            <span class="price-chip">Electric Chainsaw &mdash; <strong>$15/day</strong></span>
+            <span class="price-chip">Cordless Pole Saw &mdash; <strong>$20/day</strong></span>
+            <span class="price-chip">Gas Pole Saw &mdash; <strong>$25/day</strong></span>
+            <span class="price-chip">All 4 Tools Combo &mdash; <strong>$60/day</strong></span>
             <span class="price-chip">Electric Eel Snake &mdash; <strong>$50/day</strong></span>
             <span class="price-chip">Sewer Camera alone &mdash; <strong>$35/day</strong></span>
             <span class="price-chip">Sewer Camera + Snake combo &mdash; <strong>$75/day</strong></span>
@@ -464,29 +479,164 @@
         </div>
     </section>
 
-    <!-- ================= CHAINSAW & POLE SAW COMBO ================= -->
-    <section class="rental-item combo-item" id="chainsaw-combo">
+    <!-- ================= GAS CHAINSAW ================= -->
+    <section class="rental-item" id="gas-chainsaw">
         <div class="rental-item-grid">
             <div class="rental-gallery">
-                <div class="gallery-main" data-gallery="chainsaw-combo">
-                    <img src="img/rentals/chainsaw-combo/gas-chainsaw-1.jpg" alt="Gas chainsaw and pole saw combo kit" id="chainsaw-combo-main-img">
+                <div class="gallery-main" data-gallery="gas-chainsaw">
+                    <img src="img/rentals/chainsaw-combo/gas-chainsaw-1.jpg" alt="Baotree 62cc gas chainsaw" id="gas-chainsaw-main-img">
                 </div>
-                <div class="gallery-thumbs" id="chainsaw-combo-thumbs"></div>
+                <div class="gallery-thumbs" id="gas-chainsaw-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Gas Chainsaw</h3>
+                <div class="rental-brand">Baotree &mdash; 62cc, 18 in &amp; 22 in bars</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$25</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">A 62cc gas chainsaw for felling, firewood, and heavy logging cuts &mdash; the tool to reach for on the big jobs.</p>
+                <table class="specs-table">
+                    <tr><td>Engine</td><td>62cc, 2-cycle, 3.5 hp</td></tr>
+                    <tr><td>Bar length</td><td>18 in &amp; 22 in</td></tr>
+                    <tr><td>Weight</td><td>19 lbs</td></tr>
+                    <tr><td>Safety</td><td>3D anti-kickback chain brake system</td></tr>
+                    <tr><td>Features</td><td>Forged magnesium crankcase, tool-free chain tensioning, EPA/CARB compliant</td></tr>
+                </table>
+                <p class="combo-link">Need the whole tree kit? See the <a href="#tools-combo">4-tool combo for $60/day</a>.</p>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ELECTRIC CHAINSAW ================= -->
+    <section class="rental-item" id="electric-chainsaw">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="electric-chainsaw">
+                    <img src="img/rentals/chainsaw-combo/electric-chainsaw-1.jpg" alt="PROYAMA 15 Amp electric corded chainsaw" id="electric-chainsaw-main-img">
+                </div>
+                <div class="gallery-thumbs" id="electric-chainsaw-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Electric Chainsaw</h3>
+                <div class="rental-brand">PROYAMA &mdash; 15 Amp corded, 18 in bar, brushless motor</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$15</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">No gas, no mixing oil &mdash; plug it in and go. A quieter, lighter option for yard cutting and smaller jobs.</p>
+                <table class="specs-table">
+                    <tr><td>Power</td><td>15 Amp corded electric, brushless motor</td></tr>
+                    <tr><td>Bar length</td><td>18 in</td></tr>
+                    <tr><td>Features</td><td>Auto-oiler system</td></tr>
+                    <tr><td>Included</td><td>2 chains, gloves, protective glasses</td></tr>
+                </table>
+                <p class="combo-link">Need the whole tree kit? See the <a href="#tools-combo">4-tool combo for $60/day</a>.</p>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CORDLESS POLE SAW ================= -->
+    <section class="rental-item" id="cordless-polesaw">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="cordless-polesaw">
+                    <img src="img/rentals/chainsaw-combo/cordless-polesaw-1.jpg" alt="Protmex 2-in-1 cordless pole saw and mini chainsaw" id="cordless-polesaw-main-img">
+                </div>
+                <div class="gallery-thumbs" id="cordless-polesaw-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Cordless Pole Saw</h3>
+                <div class="rental-brand">Protmex &mdash; 21V 2-in-1 pole saw &amp; mini chainsaw, up to 15 ft reach</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$20</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">Battery-powered, so there's no gas or extension cord &mdash; detaches from the pole to work as a handheld mini chainsaw too.</p>
+                <table class="specs-table">
+                    <tr><td>Power</td><td>21V, 2&times;4.0Ah batteries + charger included</td></tr>
+                    <tr><td>Bar length</td><td>8 in</td></tr>
+                    <tr><td>Reach</td><td>Extends 4.2&ndash;7.8 ft, up to 15 ft max reach</td></tr>
+                    <tr><td>Features</td><td>2-in-1 (detaches to handheld mini chainsaw), tool-free chain tensioning</td></tr>
+                </table>
+                <p class="combo-link">Need the whole tree kit? See the <a href="#tools-combo">4-tool combo for $60/day</a>.</p>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= GAS POLE SAW ================= -->
+    <section class="rental-item" id="gas-polesaw">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main" data-gallery="gas-polesaw">
+                    <img src="img/rentals/chainsaw-combo/gas-polesaw-1.jpg" alt="Panghuhu88 48cc gas pole saw" id="gas-polesaw-main-img">
+                </div>
+                <div class="gallery-thumbs" id="gas-polesaw-thumbs"></div>
+            </div>
+            <div class="rental-details">
+                <h3>Gas Pole Saw</h3>
+                <div class="rental-brand">Panghuhu88 &mdash; 48cc, 11.5 in bar, up to 16 ft reach</div>
+                <div class="rental-prices">
+                    <span class="price-badge"><span class="amount">$25</span><span class="label">per day</span></span>
+                </div>
+                <p class="rental-desc">The longest reach of the bunch &mdash; a gas-powered pole saw for tall trees and high branches without a ladder.</p>
+                <table class="specs-table">
+                    <tr><td>Engine</td><td>48cc, 2-stroke, up to 3000 rpm</td></tr>
+                    <tr><td>Bar length</td><td>11.5 in</td></tr>
+                    <tr><td>Reach</td><td>Extendable pole, 7&ndash;9.5 ft, up to 16 ft total reach</td></tr>
+                    <tr><td>Features</td><td>Ergonomic front handle, padded shoulder straps, quick-release safety strap</td></tr>
+                </table>
+                <p class="combo-link">Need the whole tree kit? See the <a href="#tools-combo">4-tool combo for $60/day</a>.</p>
+                <div class="cta-row">
+                    <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
+                    <a class="rent-cta secondary" href="contact.html">Contact Form</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ALL 4 TOOLS COMBO ================= -->
+    <section class="rental-item combo-item" id="tools-combo">
+        <div class="rental-item-grid">
+            <div class="rental-gallery">
+                <div class="gallery-main grid-gallery">
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/chainsaw-combo/gas-chainsaw-1.jpg')">
+                        <img src="img/rentals/chainsaw-combo/gas-chainsaw-1.jpg" alt="Gas chainsaw">
+                    </div>
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/chainsaw-combo/electric-chainsaw-1.jpg')">
+                        <img src="img/rentals/chainsaw-combo/electric-chainsaw-1.jpg" alt="Electric chainsaw">
+                    </div>
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/chainsaw-combo/cordless-polesaw-1.jpg')">
+                        <img src="img/rentals/chainsaw-combo/cordless-polesaw-1.jpg" alt="Cordless pole saw">
+                    </div>
+                    <div class="split-pane" onclick="openSingleImage('img/rentals/chainsaw-combo/gas-polesaw-1.jpg')">
+                        <img src="img/rentals/chainsaw-combo/gas-polesaw-1.jpg" alt="Gas pole saw">
+                    </div>
+                </div>
             </div>
             <div class="rental-details">
                 <span class="combo-tag">4 Tools, 1 Rate</span>
-                <h3>Chainsaw &amp; Pole Saw Combo</h3>
+                <h3>All 4 Tools Combo</h3>
                 <div class="rental-brand">Gas chainsaw, electric chainsaw, cordless pole saw &amp; gas pole saw &mdash; rented together</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$35</span><span class="label">per day, all 4 tools</span></span>
+                    <span class="price-badge"><span class="amount">$60</span><span class="label">per day, all 4 tools</span></span>
                 </div>
-                <p class="rental-desc">A complete tree and firewood kit: a gas chainsaw for the big cuts, an electric backup saw, and two pole saw options for branches you can't reach from the ground.</p>
+                <p class="rental-desc">A complete tree and firewood kit: a gas chainsaw for the big cuts, an electric backup saw, and two pole saw options for branches you can't reach from the ground. Renting all 4 separately runs $85/day ($25 + $15 + $20 + $25), so the combo saves $25/day.</p>
                 <table class="specs-table">
-                    <tr><td>Gas chainsaw</td><td>62cc, 18 in &amp; 22 in bars, 3.5 hp, anti-vibration &amp; anti-kickback chain brake</td></tr>
-                    <tr><td>Electric chainsaw</td><td>15 Amp corded, 18 in bar, brushless motor, auto-oiler, 2 chains + gloves + glasses included</td></tr>
-                    <tr><td>Cordless pole saw</td><td>21V, 8 in bar, 2&times;4.0Ah batteries, extends to 15 ft max reach, detaches to a handheld mini chainsaw</td></tr>
-                    <tr><td>Gas pole saw</td><td>48cc 2-stroke, 11.5 in bar, extendable pole reaching up to 16 ft</td></tr>
-                    <tr><td>Best for</td><td>Tree trimming, firewood, storm cleanup, branches at any height</td></tr>
+                    <tr><td>Gas chainsaw</td><td>62cc, 18 in &amp; 22 in bars, 3.5 hp</td></tr>
+                    <tr><td>Electric chainsaw</td><td>15 Amp corded, 18 in bar, brushless, auto-oiler</td></tr>
+                    <tr><td>Cordless pole saw</td><td>21V, 8 in bar, up to 15 ft reach, detaches to a mini chainsaw</td></tr>
+                    <tr><td>Gas pole saw</td><td>48cc 2-stroke, 11.5 in bar, up to 16 ft reach</td></tr>
+                    <tr><td>Rented separately</td><td>$25 + $15 + $20 + $25 = $85/day</td></tr>
                 </table>
                 <div class="cta-row">
                     <a class="rent-cta" href="tel:3134597029">Call to Reserve</a>
@@ -635,14 +785,24 @@
             files: ['1.webp', '4.webp', '6.webp', '3.webp'],
             current: 0
         },
-        'chainsaw-combo': {
+        'gas-chainsaw': {
             folder: 'img/rentals/chainsaw-combo/',
-            files: [
-                'gas-chainsaw-1.jpg', 'gas-chainsaw-2.jpg',
-                'electric-chainsaw-1.jpg', 'electric-chainsaw-2.jpg',
-                'cordless-polesaw-1.jpg', 'cordless-polesaw-2.jpg',
-                'gas-polesaw-1.jpg', 'gas-polesaw-2.jpg'
-            ],
+            files: ['gas-chainsaw-1.jpg', 'gas-chainsaw-2.jpg'],
+            current: 0
+        },
+        'electric-chainsaw': {
+            folder: 'img/rentals/chainsaw-combo/',
+            files: ['electric-chainsaw-1.jpg', 'electric-chainsaw-2.jpg'],
+            current: 0
+        },
+        'cordless-polesaw': {
+            folder: 'img/rentals/chainsaw-combo/',
+            files: ['cordless-polesaw-1.jpg', 'cordless-polesaw-2.jpg'],
+            current: 0
+        },
+        'gas-polesaw': {
+            folder: 'img/rentals/chainsaw-combo/',
+            files: ['gas-polesaw-1.jpg', 'gas-polesaw-2.jpg'],
             current: 0
         },
         'sewer-cam': {
