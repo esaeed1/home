@@ -7,22 +7,50 @@
     <title>Equipment Rentals - Home & Labor Supplies</title>
     <link rel="stylesheet" href="css/style1.css">
     <style>
+        :root {
+            --ink: #1b1d22;
+            --panel: #24272e;
+            --orange: #ff6a1a;
+            --orange-dark: #d9500a;
+            --amber: #ffb703;
+            --paper: #f6f2ea;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--paper);
+            color: #2b2b28;
         }
 
         header {
-            background-color: #007bff;
+            background-color: var(--ink);
             color: white;
-            padding: 15px 10px;
+            padding: 16px 10px 14px;
             text-align: center;
+            border-bottom: 4px solid var(--orange);
         }
 
         header h1 {
-            margin: 0;
+            margin: 0 0 8px;
             font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        header nav {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        header nav a {
+            text-transform: uppercase;
+            font-size: 0.82em;
+            letter-spacing: 0.03em;
+        }
+
+        header nav a:hover {
+            color: var(--orange);
         }
 
         main {
@@ -32,48 +60,46 @@
         }
 
         .rentals-hero {
+            position: relative;
+            overflow: hidden;
+            background: var(--ink);
+            color: #fff;
             text-align: center;
-            padding: 36px 16px 28px;
+            padding: 40px 16px 32px;
+            border-radius: 14px;
+            margin: 18px 0 26px;
+        }
+
+        .rentals-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(135deg, rgba(255, 106, 26, 0.16) 0 18px, transparent 18px 36px);
+            pointer-events: none;
         }
 
         .rentals-hero h2 {
+            position: relative;
             margin: 0 0 10px;
             font-size: 2em;
-            color: #0A2E5C;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         .rentals-hero p {
+            position: relative;
             max-width: 640px;
-            margin: 0 auto 20px;
-            color: #4a5568;
+            margin: 0 auto;
+            color: #d9d5c9;
             line-height: 1.6;
-        }
-
-        .price-glance {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .price-chip {
-            background: #fff;
-            border: 1px solid #d9e3f0;
-            border-radius: 999px;
-            padding: 8px 16px;
-            font-size: 0.9em;
-            color: #24344d;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-        }
-
-        .price-chip strong {
-            color: #007bff;
         }
 
         .rental-item {
             background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border: 1px solid #e6e1d5;
+            border-left: 6px solid var(--orange);
+            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 32px;
             overflow: hidden;
@@ -206,7 +232,7 @@
         }
 
         .gallery-thumbs img.active {
-            border-color: #007bff;
+            border-color: var(--orange);
         }
 
         .rental-details {
@@ -216,12 +242,14 @@
         .rental-details h3 {
             margin: 0 0 4px;
             font-size: 1.4em;
-            color: #0A2E5C;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.01em;
         }
 
         .rental-brand {
             font-size: 0.85em;
-            color: #718096;
+            color: #8a8378;
             margin-bottom: 12px;
         }
 
@@ -235,7 +263,7 @@
         .price-badge {
             display: inline-flex;
             flex-direction: column;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
             color: #fff;
             padding: 8px 16px;
             border-radius: 10px;
@@ -265,7 +293,7 @@
         }
 
         .combo-link a {
-            color: #007bff;
+            color: var(--orange-dark);
             font-weight: 600;
             text-decoration: none;
         }
@@ -275,13 +303,15 @@
         }
 
         .combo-item {
-            border: 1.5px solid #007bff;
+            border: 1.5px solid var(--amber);
+            border-left: 6px solid var(--amber);
+            background: #fffaf0;
         }
 
         .combo-tag {
             display: inline-block;
-            background: #eaf3ff;
-            color: #0056b3;
+            background: #fff1d9;
+            color: var(--orange-dark);
             font-size: 0.75em;
             font-weight: 700;
             letter-spacing: 0.03em;
@@ -306,7 +336,7 @@
 
         .specs-table td:first-child {
             font-weight: 600;
-            color: #2d3748;
+            color: var(--ink);
             width: 42%;
         }
 
@@ -322,7 +352,7 @@
 
         .rent-cta {
             display: inline-block;
-            background-color: #007bff;
+            background-color: var(--orange);
             color: #fff;
             padding: 10px 20px;
             border-radius: 6px;
@@ -332,22 +362,22 @@
         }
 
         .rent-cta:hover {
-            background-color: #0062cc;
+            background-color: var(--orange-dark);
         }
 
         .rent-cta.secondary {
             background-color: #fff;
-            color: #007bff;
-            border: 1.5px solid #007bff;
+            color: var(--orange-dark);
+            border: 1.5px solid var(--orange-dark);
         }
 
         .rent-cta.secondary:hover {
-            background-color: #eef6ff;
+            background-color: #fff1e0;
         }
 
         .how-it-works {
             background: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #e6e1d5;
             border-radius: 14px;
             padding: 22px 24px;
             margin-bottom: 32px;
@@ -355,7 +385,9 @@
 
         .how-it-works h3 {
             margin-top: 0;
-            color: #0A2E5C;
+            color: var(--ink);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
 
         .how-it-works ul {
@@ -365,23 +397,88 @@
             line-height: 1.8;
         }
 
+        /* ================= DAMAGE POLICY (top of page, impossible to miss) ================= */
         .damage-policy {
-            background: #fff8f0;
-            border: 1px solid #f0c78a;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: #c40000;
+            border: 3px solid #7a0000;
             border-radius: 14px;
-            padding: 22px 24px;
-            margin-bottom: 32px;
+            padding: 20px 22px;
+            margin: 18px 0 26px;
+            box-shadow: 0 6px 18px rgba(196, 0, 0, 0.35);
+        }
+
+        .damage-policy-icon {
+            font-size: 2.2em;
+            line-height: 1;
+            flex-shrink: 0;
         }
 
         .damage-policy h3 {
-            margin-top: 0;
-            color: #a15c00;
+            margin: 0 0 6px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 1.25em;
         }
 
         .damage-policy p {
             margin: 0;
-            color: #5c4326;
+            color: #fff;
             line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* ================= MOBILE: photo grid instead of one small photo ================= */
+        @media (max-width: 600px) {
+            main {
+                padding: 8px 10px 32px;
+            }
+
+            .rentals-hero {
+                padding: 26px 14px 22px;
+            }
+
+            .rentals-hero h2 {
+                font-size: 1.5em;
+            }
+
+            .rental-gallery {
+                padding: 14px;
+            }
+
+            .rental-details {
+                padding: 18px 16px 22px;
+            }
+
+            .gallery-main:not(.split-gallery):not(.grid-gallery) {
+                display: none;
+            }
+
+            .gallery-thumbs {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                margin-top: 0;
+                overflow: visible;
+                padding-bottom: 0;
+            }
+
+            .gallery-thumbs img {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1;
+                border-radius: 8px;
+                border-width: 2px;
+            }
+
+            .damage-policy {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
 
         /* Lightbox */
@@ -444,24 +541,17 @@
 </header>
 
 <main>
+    <section class="damage-policy">
+        <div class="damage-policy-icon">&#9888;</div>
+        <div>
+            <h3>Damage Policy &mdash; Read Before Renting</h3>
+            <p>If a rented item is broken, damaged, or stops working while in your possession, you're responsible for either repairing it to full working condition before returning it, or buying a new replacement of equal or greater value for us to keep &mdash; in that case, you're welcome to keep the broken item. Normal wear and tear is fine; this covers damage, misuse, and loss.</p>
+        </div>
+    </section>
+
     <section class="rentals-hero">
         <h2>Equipment Rentals</h2>
-        <p>Daily rentals for hauling and plumbing jobs. Call, text, or use the contact form to check availability and set up pickup at 14854 W Grand River Ave, Detroit, MI 48227.</p>
-        <div class="price-glance">
-            <span class="price-chip">Trailer &mdash; <strong>$50/day</strong></span>
-            <span class="price-chip">Pressure Washer &mdash; <strong>$40/day</strong></span>
-            <span class="price-chip">Gas Chainsaw &mdash; <strong>$25/day</strong></span>
-            <span class="price-chip">Electric Chainsaw &mdash; <strong>$15/day</strong></span>
-            <span class="price-chip">Cordless Pole Saw &mdash; <strong>$20/day</strong></span>
-            <span class="price-chip">Gas Pole Saw &mdash; <strong>$25/day</strong></span>
-            <span class="price-chip">All 4 Tools Combo &mdash; <strong>$60/day</strong></span>
-            <span class="price-chip">Electric Eel Snake &mdash; <strong>$50/day</strong></span>
-            <span class="price-chip">Sewer Camera alone &mdash; <strong>$35/day</strong></span>
-            <span class="price-chip">Sewer Camera + Snake combo &mdash; <strong>$75/day</strong></span>
-            <span class="price-chip">Honda Self-Propelled Mower &mdash; <strong>$40/day</strong></span>
-            <span class="price-chip">Ariens Riding Mower &mdash; <strong>$40/day</strong></span>
-            <span class="price-chip">Ford F-550 Stake/Liftgate Truck &mdash; <strong>$120/day</strong></span>
-        </div>
+        <p>Daily rentals for hauling and plumbing jobs. Call, text, or use the contact form to check availability and arrange pickup.</p>
     </section>
 
     <!-- ================= TRAILER ================= -->
@@ -477,7 +567,9 @@
                 <h3>12&prime; Utility Trailer</h3>
                 <div class="rental-brand">Single-axle mesh-side utility trailer &mdash; 12 ft long, 75 in wide</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$50</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$130</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$220</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A single-axle utility trailer with mesh-cage side rails and a rear loading gate &mdash; good for hauling yard waste, scrap, appliances, furniture, or equipment.</p>
                 <table class="specs-table">
@@ -510,7 +602,9 @@
                 <h3>Gas Pressure Washer</h3>
                 <div class="rental-brand">DeWalt DXPW3324I &mdash; 3300 PSI / 2.4 GPM, Honda GCV200 engine</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$40</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$40</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$100</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$170</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A commercial-grade gas pressure washer for decks, siding, driveways, fences, paint prep, and graffiti removal. Idle-down technology quiets the engine and saves fuel whenever the trigger isn't pulled.</p>
                 <table class="specs-table">
@@ -542,7 +636,9 @@
                 <h3>Gas Chainsaw</h3>
                 <div class="rental-brand">Baotree &mdash; 62cc, 18 in &amp; 22 in bars</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$25</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$25</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$65</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$110</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A 62cc gas chainsaw for felling, firewood, and heavy logging cuts &mdash; the tool to reach for on the big jobs.</p>
                 <table class="specs-table">
@@ -574,7 +670,9 @@
                 <h3>Electric Chainsaw</h3>
                 <div class="rental-brand">PROYAMA &mdash; 15 Amp corded, 18 in bar, brushless motor</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$15</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$15</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$40</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$65</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">No gas, no mixing oil &mdash; plug it in and go. A quieter, lighter option for yard cutting and smaller jobs.</p>
                 <table class="specs-table">
@@ -605,7 +703,9 @@
                 <h3>Cordless Pole Saw</h3>
                 <div class="rental-brand">Protmex &mdash; 21V 2-in-1 pole saw &amp; mini chainsaw, up to 15 ft reach</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$20</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$20</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$50</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$85</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">Battery-powered, so there's no gas or extension cord &mdash; detaches from the pole to work as a handheld mini chainsaw too.</p>
                 <table class="specs-table">
@@ -636,7 +736,9 @@
                 <h3>Gas Pole Saw</h3>
                 <div class="rental-brand">Panghuhu88 &mdash; 48cc, 11.5 in bar, up to 16 ft reach</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$25</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$25</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$65</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$110</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">The longest reach of the bunch &mdash; a gas-powered pole saw for tall trees and high branches without a ladder.</p>
                 <table class="specs-table">
@@ -678,7 +780,9 @@
                 <h3>All 4 Tools Combo</h3>
                 <div class="rental-brand">Gas chainsaw, electric chainsaw, cordless pole saw &amp; gas pole saw &mdash; rented together</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$60</span><span class="label">per day, all 4 tools</span></span>
+                    <span class="price-badge"><span class="amount">$60</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$150</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$250</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A complete tree and firewood kit: a gas chainsaw for the big cuts, an electric backup saw, and two pole saw options for branches you can't reach from the ground. Renting all 4 separately runs $85/day ($25 + $15 + $20 + $25), so the combo saves $25/day.</p>
                 <table class="specs-table">
@@ -709,7 +813,9 @@
                 <h3>Sewer Inspection Camera</h3>
                 <div class="rental-brand">Brand: SYOWNFS &mdash; 4.3" DVR Pipe Inspection Camera (66ft/20m)</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$35</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$35</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$90</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$150</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A 4.3" color DVR sewer camera on a 66 ft fiberglass push-rod for spotting clogs, roots, and pipe damage before you dig or dispatch a crew. Records video and photos straight to the included memory card.</p>
                 <p class="combo-link">Diagnosing <em>and</em> clearing a clog? See the <a href="#combo">Camera + Snake combo for $75/day</a>.</p>
@@ -743,7 +849,9 @@
                 <h3>Electric Eel Drain Snake</h3>
                 <div class="rental-brand">Electric Eel &mdash; Model Z5 open-cage drain cleaning machine</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$50</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$50</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$130</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$220</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">An electric drum-style drain snake for clearing clogged sewer and drain lines. Open-cage design makes it quick to inspect and clean the cable between runs.</p>
                 <p class="combo-link">Want to see the line before and after clearing it? See the <a href="#combo">Camera + Snake combo for $75/day</a>.</p>
@@ -782,7 +890,9 @@
                 <h3>Sewer Camera + Electric Eel Snake Combo</h3>
                 <div class="rental-brand">SYOWNFS sewer camera &amp; Electric Eel Model Z5, rented together</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$75</span><span class="label">per day, both tools</span></span>
+                    <span class="price-badge"><span class="amount">$75</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$190</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$320</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">Find the clog with the camera, then clear it with the snake &mdash; one trip, one daily rate. Renting both separately runs $85/day ($35 camera + $50 snake), so the combo saves $10/day.</p>
                 <table class="specs-table">
@@ -813,7 +923,9 @@
                 <h3>Honda Self-Propelled Mower</h3>
                 <div class="rental-brand">Honda HRX217K6VKA &mdash; 21" self-propelled, with bag</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$40</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$40</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$100</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$170</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">A self-propelled Honda mower that bags, mulches, discharges, or shreds leaves &mdash; no attachments to swap. The GCV200 engine and twin-blade cutting system make quick, clean work of a residential lawn.</p>
                 <table class="specs-table">
@@ -846,7 +958,9 @@
                 <h3>Ariens Riding Mower</h3>
                 <div class="rental-brand">Ariens EZ Rider 915 Series (EZR 1742) &mdash; 42" zero-turn</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$40</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$40</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$100</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$170</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">An old-school, built-to-last Ariens zero-turn &mdash; 42 inches of deck and a 17 hp Briggs &amp; Stratton Intek engine make short work of large lawns, fields, and lots that would take hours with a push mower.</p>
                 <table class="specs-table">
@@ -877,7 +991,9 @@
                 <h3>2008 Ford F-550 Stake Bed &amp; Liftgate</h3>
                 <div class="rental-brand">17 ft stake flatbed with a 3,300 lb Palfinger liftgate</div>
                 <div class="rental-prices">
-                    <span class="price-badge"><span class="amount">$120</span><span class="label">per day</span></span>
+                    <span class="price-badge"><span class="amount">$120</span><span class="label">1 day</span></span>
+                    <span class="price-badge"><span class="amount">$300</span><span class="label">3 days</span></span>
+                    <span class="price-badge"><span class="amount">$500</span><span class="label">1 week</span></span>
                 </div>
                 <p class="rental-desc">Great for moving appliances, furniture, pallets, or equipment &mdash; the hydraulic liftgate lowers to ground level so you roll heavy loads straight on, no ramp or straining your back. The 17 ft stake-side flatbed hauls long or bulky loads a pickup truck can't touch. No CDL required.</p>
                 <table class="specs-table">
@@ -900,14 +1016,9 @@
         <h3>How Rentals Work</h3>
         <ul>
             <li>Call, text, or use the <a href="contact.html">contact form</a> to check availability.</li>
-            <li>Pickup &amp; return at 14854 W Grand River Ave, Detroit, MI 48227.</li>
+            <li>Pickup &amp; return location is provided when you reserve.</li>
             <li>Rent the <a href="#combo">sewer camera and drain snake together</a> for $75/day instead of $85/day separately.</li>
         </ul>
-    </section>
-
-    <section class="damage-policy">
-        <h3>Damage Policy</h3>
-        <p>If a rented item is broken, damaged, or stops working while in your possession, you're responsible for either repairing it to full working condition before returning it, or buying a new replacement of equal or greater value for us to keep &mdash; in that case, you're welcome to keep the broken item. Normal wear and tear is fine; this covers damage, misuse, and loss.</p>
     </section>
 </main>
 
@@ -997,7 +1108,12 @@
             thumb.src = src;
             thumb.alt = '';
             if (i === 0) thumb.classList.add('active');
-            thumb.addEventListener('click', () => setActive(key, i));
+            thumb.addEventListener('click', () => {
+                setActive(key, i);
+                if (window.matchMedia('(max-width: 600px)').matches) {
+                    openLightbox(key, i);
+                }
+            });
             thumbsWrap.appendChild(thumb);
         });
 
