@@ -175,9 +175,13 @@ function displayItems(items) {
                 ${galleryImages.length > 1 ? `
                     <button type="button" class="gallery-nav-btn gallery-nav-prev" data-dir="-1" aria-label="Previous photo">&#8249;</button>
                     <button type="button" class="gallery-nav-btn gallery-nav-next" data-dir="1" aria-label="Next photo">&#8250;</button>
-                    <div class="gallery-count">1/${galleryImages.length}</div>
                 ` : ''}
             </div>
+            ${galleryImages.length > 1 ? `
+                <div class="item-thumbs" id="thumbs-${item.id}">
+                    ${galleryImages.map((src, i) => `<img src="${src}" alt="" class="${i === 0 ? 'active' : ''}" data-index="${i}">`).join('')}
+                </div>
+            ` : ''}
             <div class="item-content">
                 <h3 class="item-title">${item.name}</h3>
                 <p class="item-description">
@@ -192,20 +196,32 @@ function displayItems(items) {
         
         itemGrid.appendChild(itemCard);
 
-        // Wire up the prev/next arrows for this card's photo gallery.
+        // Wire up the prev/next arrows and thumbnail strip for this card's
+        // photo gallery -- both control the same main image and stay in sync.
         if (galleryImages.length > 1) {
             let index = 0;
             const galleryEl = itemCard.querySelector(`#gallery-${item.id}`);
             const imgEl = galleryEl.querySelector('.item-image');
-            const counterEl = galleryEl.querySelector('.gallery-count');
+            const thumbsEl = itemCard.querySelector(`#thumbs-${item.id}`);
+            const thumbEls = Array.from(thumbsEl.querySelectorAll('img'));
+
+            const showIndex = (i) => {
+                index = (i + galleryImages.length) % galleryImages.length;
+                imgEl.src = galleryImages[index];
+                thumbEls.forEach((t, ti) => t.classList.toggle('active', ti === index));
+            };
 
             galleryEl.querySelectorAll('.gallery-nav-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const dir = parseInt(btn.dataset.dir, 10);
-                    index = (index + dir + galleryImages.length) % galleryImages.length;
-                    imgEl.src = galleryImages[index];
-                    counterEl.textContent = `${index + 1}/${galleryImages.length}`;
+                    showIndex(index + parseInt(btn.dataset.dir, 10));
+                });
+            });
+
+            thumbEls.forEach((thumb) => {
+                thumb.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showIndex(parseInt(thumb.dataset.index, 10));
                 });
             });
         }
