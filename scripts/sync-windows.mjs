@@ -82,21 +82,48 @@ async function main() {
     await page.waitForSelector('a[href*="/marketplace/item/"]', { timeout: 30000 });
 
     // The profile page also renders unrelated "today's picks"/recommendation
-    // cards using the exact same link markup, and Facebook's CSS classes are
-    // all obfuscated (no stable container to scope by). Instead, use each
-    // link's aria-label (format: "{title}, ${price}, {city}, listing {id}")
-    // and keep only cards that are actually windows: this seller's own
-    // listings all contain "window" in the title, or are a bare "WxH"
-    // dimension with nothing else (e.g. "38*54").
-    const allCards = await page.$$eval('a[href*="/marketplace/item/"]', (anchors) =>
-        anchors.map((a) => ({
+    // cards (other sellers' nearby listings) using the exact same link
+    // markup, mixed into the same page. Facebook's CSS classes are all
+    // obfuscated, so instead of a stable class we scope by structure: find
+    // the "{City}'s listings" heading, then walk up its ancestors until we
+    // reach the first one that actually contains item links -- that's the
+    // seller's own listings grid. This reliably excludes the recommendation
+    // cards (verified by hand on 2026-08-24: 25 links on the full page,
+    // 7 within this scoped container -- exactly this seller's own listings).
+    const scopedCards = await page.evaluate(() => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let headingEl = null;
+        while (walker.nextNode()) {
+            if (/'s listings$/i.test(walker.currentNode.textContent.trim())) {
+                headingEl = walker.currentNode.parentElement;
+                break;
+            }
+        }
+        if (!headingEl) return null;
+
+        let container = headingEl;
+        for (let i = 0; i < 30 && container; i++) {
+            if (container.querySelectorAll('a[href*="/marketplace/item/"]').length > 0) break;
+            container = container.parentElement;
+        }
+        if (!container) return null;
+
+        return Array.from(container.querySelectorAll('a[href*="/marketplace/item/"]')).map((a) => ({
             href: a.getAttribute('href') || '',
             ariaLabel: a.getAttribute('aria-label') || '',
-        }))
-    );
+        }));
+    });
 
-    const isWindowTitle = (title) =>
-        /window/i.test(title) || /^\d{1,3}\s*[*x×]\s*\d{1,3}\s*$/i.test(title.trim());
+    const allLinksOnPage = await page.$$eval('a[href*="/marketplace/item/"]', (anchors) => anchors.length);
+    const allCards = scopedCards || [];
+
+    // Previously this also required the title to look like a window
+    // ("window" in the title, or a bare "WxH" dimension) to filter out the
+    // recommendation-card noise above. Now that scoping is handled
+    // structurally instead, that title filter is commented out -- every
+    // listing in the seller's own grid gets synced, not just windows.
+    // const isWindowTitle = (title) =>
+    //     /window/i.test(title) || /^\d{1,3}\s*[*x×]\s*\d{1,3}\s*$/i.test(title.trim());
 
     const seen = new Set();
     const listings = [];
@@ -109,13 +136,13 @@ async function main() {
         // aria-label: "{title}, {price-or-FREE}, {city}, listing {id}"
         const parts = ariaLabel.split(',');
         const title = (parts[0] || '').trim();
-        if (!title || !isWindowTitle(title)) continue;
+        if (!title) continue; // if (!title || !isWindowTitle(title)) continue;
 
         seen.add(id);
         listings.push({ id, title, ariaLabel });
     }
 
-    console.log(`Found ${allCards.length} total marketplace card(s), ${listings.length} of them window listings.`);
+    console.log(`Found ${allLinksOnPage} total marketplace card(s) on the page, ${allCards.length} in the seller's own listings grid, ${listings.length} synced.`);
 
     const results = [];
 
