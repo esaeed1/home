@@ -1,0 +1,102 @@
+// Gate Access System — Genesis One
+// P1: AX22-0014 Relay (gate trigger)
+// P2: AX22-0012 Active Buzzer (siren)
+
+#define RELAY_PIN   P1_IO1
+#define BUZZER_PIN  P2_IO1
+
+#define RELAY_PULSE_MS  600    // momentary trigger to gate opener terminal
+#define SIREN_DURATION  12000  // siren on while gate is opening (ms)
+#define GATE_COOLDOWN   3000   // min ms between successive triggers
+
+bool gateIsOpen      = false;
+bool relayActive     = false;
+unsigned long relayStart = 0;
+
+bool sirenActive     = false;
+unsigned long sirenStart = 0;
+unsigned long lastBeep   = 0;
+bool beepPhase       = false;
+
+unsigned long lastTrigger = 0;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+void triggerGate(bool opening) {
+  unsigned long now = millis();
+  if (now - lastTrigger < (unsigned long)GATE_COOLDOWN) return;
+  lastTrigger = now;
+
+  digitalWrite(RELAY_PIN, HIGH);
+  relayActive = true;
+  relayStart  = now;
+
+  if (opening) {
+    sirenActive = true;
+    sirenStart  = now;
+    lastBeep    = now;
+    beepPhase   = false;
+    tone(BUZZER_PIN, 750);
+  }
+}
+
+// ─── setup / loop ─────────────────────────────────────────────────────────────
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PIN,  OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+  noTone(BUZZER_PIN);
+  Serial.println("READY");
+  Serial.println("GATE_STATE:CLOSED");
+}
+
+void loop() {
+  unsigned long now = millis();
+
+  // Relay pulse release
+  if (relayActive && now - relayStart >= (unsigned long)RELAY_PULSE_MS) {
+    digitalWrite(RELAY_PIN, LOW);
+    relayActive = false;
+  }
+
+  // Siren wail — alternates 750 Hz / 1100 Hz every 180 ms
+  if (sirenActive) {
+    if (now - sirenStart >= (unsigned long)SIREN_DURATION) {
+      sirenActive = false;
+      noTone(BUZZER_PIN);
+    } else if (now - lastBeep >= 180) {
+      lastBeep  = now;
+      beepPhase = !beepPhase;
+      tone(BUZZER_PIN, beepPhase ? 1100 : 750);
+    }
+  }
+
+  // Serial commands from browser
+  if (Serial.available()) {
+    String cmd = Serial.readStringUntil('\n');
+    cmd.trim();
+
+    if (cmd == "GATE:OPEN" && !gateIsOpen) {
+      gateIsOpen = true;
+      triggerGate(true);
+      Serial.println("GATE_STATE:OPEN");
+
+    } else if (cmd == "GATE:CLOSE" && gateIsOpen) {
+      gateIsOpen = false;
+      triggerGate(false);
+      Serial.println("GATE_STATE:CLOSED");
+
+    } else if (cmd == "GATE:TOGGLE") {
+      gateIsOpen = !gateIsOpen;
+      triggerGate(gateIsOpen);
+      Serial.println(gateIsOpen ? "GATE_STATE:OPEN" : "GATE_STATE:CLOSED");
+
+    } else if (cmd == "GATE:STATUS") {
+      Serial.println(gateIsOpen ? "GATE_STATE:OPEN" : "GATE_STATE:CLOSED");
+    }
+  }
+}
+
+https://studio.axiometa.io/
