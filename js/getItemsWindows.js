@@ -1,10 +1,10 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Same Supabase project as items.html/admin.html -- windows now live in
-// their own `windows` table there instead of a separate project.
+// AMAZON project (org "Need") -- windows live in their own `windows` table
+// there, separate from the bookkeeping tables also in this project.
 // See sql/create_windows_table.sql and docs/database-setup.md.
-const SUPABASE_URL = 'https://ymyztsxdqmiklnsjurhq.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlteXp0c3hkcW1pa2xuc2p1cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNDA3MzQsImV4cCI6MjA0OTgxNjczNH0.dGJ9LjCTGvGzUrSQfln_nxiIrxXNBy57Z98b8G7yZqk';
+const SUPABASE_URL = 'https://qgtcbwgjmpvslytxywju.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFndGNid2dqbXB2c2x5dHh5d2p1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNjQzMTQsImV4cCI6MjA5Nzg0MDMxNH0.32AYjBi8YwbTYn5v3dxghs6T6GWiMxcuwZU6dVjE6nc';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allItems = [];
