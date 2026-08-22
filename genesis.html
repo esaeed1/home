@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gate Access System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:transparent;color:#e8e4dc;font-family:'DM Sans',sans-serif;min-height:100vh;padding:20px}
+.mono{font-family:'DM Mono',monospace}
+
+#app{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* Loading */
+#loading-overlay{position:fixed;inset:0;background:#161618ee;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:1000;transition:opacity 0.5s}
+.load-title{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6a6458}
+.load-msg{font-size:13px;font-family:'DM Mono',monospace;color:#a09888;text-align:center;max-width:280px}
+.progress-bar{width:220px;height:2px;background:#2e2c28;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:#5bbae0;border-radius:2px;transition:width .4s}
+.spinner{width:28px;height:28px;border:2px solid #2e2c28;border-top-color:#5bbae0;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Modals */
+.modal-bg{display:none;position:fixed;inset:0;background:#00000090;z-index:500;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:#1e1d1b;border:1px solid #3e3c38;border-radius:14px;padding:26px;max-width:360px;width:90%;display:flex;flex-direction:column;gap:14px}
+.modal-title{font-size:15px;font-weight:600}
+.modal-sub{font-size:13px;color:#6a6458;line-height:1.5}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* Cards */
+.card{background:#1e1d1b;border:1px solid #2e2c28;border-radius:12px;padding:16px 18px}
+.card-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#6a6458;font-family:'DM Mono',monospace;margin-bottom:12px}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;background:#1e1d1b;border:1px solid #2e2c28;border-radius:12px;padding:13px 20px}
+.header-title{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#a09888}
+.conn-row{display:flex;align-items:center;gap:7px;font-size:12px;color:#6a6458}
+.dot{width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0}
+.dot.ok{background:#4caf6e;box-shadow:0 0 7px #4caf6e88}
+.dot.err{background:#e05050}
+
+/* Hero */
+.hero{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;background:#1e1d1b;border:1px solid #2e2c28;border-radius:12px;padding:22px 24px}
+.gate-lbl{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#6a6458;font-family:'DM Mono',monospace}
+.gate-val{font-size:2.6rem;font-weight:600;font-family:'DM Mono',monospace;transition:color .4s;margin:2px 0 4px}
+.gate-val.open{color:#4caf6e}
+.gate-val.closed{color:#e8e4dc}
+.last-act{font-size:12px;font-family:'DM Mono',monospace;color:#4a4640}
+.ctrl-row{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{padding:11px 22px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.03em;transition:all .15s}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.open{background:#2d4f3a;color:#4caf6e;border:1px solid #3a6649}
+.btn.open:hover:not(:disabled){background:#3a6649}
+.btn.close{background:#1e1d1b;color:#a09888;border:1px solid #2e2c28}
+.btn.close:hover:not(:disabled){background:#252321}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:6px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;white-space:nowrap}
+.btn-sm:disabled{opacity:.35;cursor:not-allowed}
+.btn-sm.primary{background:#1e3a4f;color:#5bbae0;border:1px solid #2a4f6a}
+.btn-sm.primary:hover:not(:disabled){background:#2a4f6a}
+.btn-sm.success{background:#2d4f3a;color:#4caf6e;border:1px solid #3a6649}
+.btn-sm.success:hover:not(:disabled){background:#3a6649}
+.btn-sm.muted{background:#252321;color:#6a6458;border:1px solid #2e2c28}
+.btn-sm.muted:hover:not(:disabled){background:#2e2c28}
+
+/* Grid */
+.main-grid{display:grid;grid-template-columns:1fr 300px;gap:14px}
+@media(max-width:660px){.main-grid{grid-template-columns:1fr}}
+
+/* Camera */
+.camera-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#111;border-radius:10px;overflow:hidden}
+#video{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1)}
+#overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;transform:scaleX(-1)}
+.reg-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:190px;border:2px solid #f0a830;border-radius:8px;pointer-events:none;z-index:20;display:none}
+.reg-frame.show{display:block}
+.cam-badges{position:absolute;bottom:8px;left:8px;display:flex;flex-direction:column;gap:4px;z-index:10}
+.badge{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:3px 8px;border-radius:4px;background:#1a1917cc;border:1px solid #333;backdrop-filter:blur(4px)}
+.badge.match{border-color:#4caf6e;color:#4caf6e}
+.badge.nomatch{border-color:#444;color:#666}
+.badge.scan{border-color:#f0a83088;color:#f0a830}
+.cam-label{position:absolute;top:10px;left:10px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6a6458;font-family:'DM Mono',monospace;z-index:10}
+
+/* Detection rows */
+.det-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #252321;font-size:12px}
+.det-row:last-child{border-bottom:none}
+.det-key{color:#6a6458;font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+.det-val{font-family:'DM Mono',monospace;font-size:11px;color:#6a6458;text-align:right;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.det-val.on{color:#4caf6e;font-weight:500}
+
+/* Tags */
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{display:flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:#252321;border:1px solid #2e2c28;font-size:11px;font-family:'DM Mono',monospace;color:#a09888}
+.tag-x{cursor:pointer;color:#444;font-size:13px;line-height:1;padding:0 2px}
+.tag-x:hover{color:#e05050}
+.empty-hint{font-size:11px;font-family:'DM Mono',monospace;color:#4a4640;margin-top:6px}
+
+/* Input */
+.input-row{display:flex;gap:6px;margin-top:8px}
+input[type="text"]{background:#252321;border:1px solid #2e2c28;border-radius:6px;padding:7px 10px;color:#e8e4dc;font-family:'DM Mono',monospace;font-size:12px;flex:1;min-width:0;outline:none;text-transform:uppercase}
+input[type="text"]:focus{border-color:#3e3c38}
+
+/* Log */
+.log-entries{display:flex;flex-direction:column;gap:3px;margin-top:8px;max-height:130px;overflow-y:auto}
+.log-entry{display:flex;gap:10px;font-size:11px;font-family:'DM Mono',monospace;padding:4px 6px;border-radius:4px}
+.log-entry:hover{background:#1a1917}
+.log-time{color:#4a4640;min-width:38px}
+.log-method{color:#5bbae0;min-width:44px}
+.log-who{color:#a09888;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-act{min-width:44px;text-align:right}
+.log-act.open{color:#4caf6e}
+.log-act.close{color:#a09888}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="load-title">Gate Access System</div>
+  <div class="spinner"></div>
+  <div class="load-msg" id="load-msg">Starting camera...</div>
+  <div class="progress-bar"><div class="progress-fill" id="load-bar" style="width:5%"></div></div>
+</div>
+
+<!-- Face registration modal -->
+<div class="modal-bg" id="reg-modal">
+  <div class="modal">
+    <div class="modal-title">Register Face</div>
+    <div class="modal-sub" id="reg-msg">Position your face inside the frame. A clear, well-lit shot works best.</div>
+    <input type="text" id="reg-name" placeholder="NAME (e.g. JOHN)" maxlength="20" style="text-transform:uppercase">
+    <div class="modal-actions">
+      <button class="btn-sm muted" onclick="closeRegModal()">Cancel</button>
+      <button class="btn-sm success" onclick="captureRegistration()">Capture</button>
+    </div>
+  </div>
+</div>
+
+<!-- NFC add modal -->
+<div class="modal-bg" id="nfc-add-modal">
+  <div class="modal">
+    <div class="modal-title">Add NFC Chip</div>
+    <div class="modal-sub" id="nfc-add-msg">Hold your NFC chip near the back of your phone or reader now...</div>
+    <div style="display:flex;justify-content:center;margin:6px 0"><div class="spinner" id="nfc-spinner"></div></div>
+    <div class="modal-actions">
+      <button class="btn-sm muted" onclick="closeNFCModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">⬡ Gate Access System</div>
+    <div class="conn-row">
+      <div class="dot" id="serial-dot"></div>
+      <span id="serial-lbl">Disconnected</span>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div>
+      <div class="gate-lbl">Gate Status</div>
+      <div class="gate-val closed mono" id="gate-val">CLOSED</div>
+      <div class="last-act" id="last-act">No recent activity</div>
+    </div>
+    <div class="ctrl-row">
+      <button class="btn open" id="btn-open" onclick="manualOpen()">Open Gate</button>
+      <button class="btn close" id="btn-close" onclick="manualClose()">Close Gate</button>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Camera panel -->
+    <div class="card" style="padding:14px">
+      <div class="card-title" style="margin-bottom:10px">Live Camera</div>
+      <div class="camera-wrap">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+        <div class="reg-frame" id="reg-frame"></div>
+        <div class="cam-badges">
+          <div class="badge nomatch" id="badge-face">FACE — loading</div>
+          <div class="badge nomatch" id="badge-plate">PLATE — loading</div>
+          <div class="badge nomatch" id="badge-nfc">NFC — checking</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panels -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Last detection -->
+      <div class="card">
+        <div class="card-title">Last Detection</div>
+        <div class="det-row"><span class="det-key">Face</span><span class="det-val mono" id="det-face">—</span></div>
+        <div class="det-row"><span class="det-key">Confidence</span><span class="det-val mono" id="det-conf">—</span></div>
+        <div class="det-row"><span class="det-key">Plate</span><span class="det-val mono" id="det-plate">—</span></div>
+        <div class="det-row"><span class="det-key">NFC UID</span><span class="det-val mono" id="det-nfc">—</span></div>
+      </div>
+
+      <!-- NFC -->
+      <div class="card">
+        <div class="card-title">NFC Chips</div>
+        <div class="det-val mono" id="nfc-status" style="color:#6a6458;font-size:11px">Checking...</div>
+        <div class="tag-list" id="nfc-tag-list"></div>
+        <div style="margin-top:10px">
+          <button class="btn-sm primary" id="btn-add-nfc" onclick="startAddNFC()">+ Add Chip</button>
+        </div>
+      </div>
+
+      <!-- Registered faces -->
+      <div class="card">
+        <div class="card-title">Registered Faces</div>
+        <div class="tag-list" id="face-tag-list"></div>
+        <div style="margin-top:10px">
+          <button class="btn-sm success" onclick="openRegModal()">+ Register Face</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Plate whitelist -->
+  <div class="card">
+    <div class="card-title">Approved License Plates</div>
+    <div class="tag-list" id="plate-tag-list"></div>
+    <div class="input-row">
+      <input type="text" id="plate-input" placeholder="ABC123 — no spaces or dashes" maxlength="10">
+      <button class="btn-sm success" onclick="addPlate()">Add</button>
+    </div>
+    <div style="font-size:10px;color:#4a4640;font-family:'DM Mono',monospace;margin-top:8px;line-height:1.5">
+      OCR reads the camera feed and compares each detected token against this list. Drive slowly and ensure the plate is well-lit and fills the lower half of the frame.
+    </div>
+  </div>
+
+  <!-- Access log -->
+  <div class="card">
+    <div class="card-title">Access Log</div>
+    <div class="log-entries" id="log-entries">
+      <div class="empty-hint">No events yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Config ────────────────────────────────────────────────────────────────────
+const MODELS_URL       = 'https://justadudewhohacks.github.io/face-api.js/models';
+const FACE_THRESHOLD   = 0.55;
+const FACE_INTERVAL    = 1500;   // ms between face detection passes
+const PLATE_INTERVAL   = 4000;   // ms between OCR passes
+const TRIGGER_COOLDOWN = 20000;  // 20s between auto-triggers (same method)
+
+// ─── State ─────────────────────────────────────────────────────────────────────
+let gateState        = 'CLOSED';
+let serialConnected  = false;
+let knownFaces       = [];
+let approvedPlates   = [];
+let approvedNFCuids  = [];
+let faceMatcher      = null;
+let tWorker          = null;
+let faceDetecting    = false;
+let plateRunning     = false;
+let lastAutoTrigger  = { face: 0, plate: 0, nfc: 0 };
+let nfcScanning      = false;
+let nfcAddMode       = false;
+let nfcReader        = null;
+let regMode          = false;
+
+// ─── Persist ───────────────────────────────────────────────────────────────────
+function saveAll() {
+  localStorage.setItem('approvedPlates',  JSON.stringify(approvedPlates));
+  localStorage.setItem('approvedNFCuids', JSON.stringify(approvedNFCuids));
+  localStorage.setItem('knownFaces', JSON.stringify(
+    knownFaces.map(f => ({ label: f.label, descriptors: f.descriptors.map(d => Array.from(d)) }))
+  ));
+}
+function loadAll() {
+  try { approvedPlates  = JSON.parse(localStorage.getItem('approvedPlates')  || '[]'); } catch(e){}
+  try { approvedNFCuids = JSON.parse(localStorage.getItem('approvedNFCuids') || '[]'); } catch(e){}
+  try {
+    const raw = JSON.parse(localStorage.getItem('knownFaces') || '[]');
+    knownFaces = raw.map(f => ({ label: f.label, descriptors: f.descriptors.map(d => new Float32Array(d)) }));
+  } catch(e){}
+}
+
+// ─── Serial ────────────────────────────────────────────────────────────────────
+window.addEventListener('message', e => {
+  if (e.data.type === 'serial_connected') {
+    serialConnected = e.data.connected;
+    document.getElementById('serial-dot').className = 'dot ' + (serialConnected ? 'ok' : 'err');
+    document.getElementById('serial-lbl').textContent = serialConnected ? 'Connected' : 'Disconnected';
+    if (serialConnected) sendSerial('GATE:STATUS');
+  }
+  if (e.data.type === 'serial_data') {
+    const line = e.data.data;
+    if (line.startsWith('GATE_STATE:')) {
+      gateState = line.slice(11).trim();
+      updateGateUI();
+    }
+  }
+});
+function sendSerial(cmd) {
+  window.parent.postMessage({ type: 'serial_send', data: cmd + '\n' }, '*');
+}
+
+// ─── Gate control ──────────────────────────────────────────────────────────────
+function canAutoTrigger(method) {
+  const now = Date.now();
+  if (now - lastAutoTrigger[method] < TRIGGER_COOLDOWN) return false;
+  lastAutoTrigger[method] = now;
+  return true;
+}
+function openGate(method, who) {
+  if (gateState === 'OPEN') return;
+  sendSerial('GATE:OPEN');
+  gateState = 'OPEN';
+  updateGateUI();
+  logEvent(method, who, 'OPEN');
+}
+function closeGate(method, who) {
+  if (gateState === 'CLOSED') return;
+  sendSerial('GATE:CLOSE');
+  gateState = 'CLOSED';
+  updateGateUI();
+  logEvent(method, who, 'CLOSE');
+}
+function manualOpen()  { openGate('manual', 'Operator'); }
+function manualClose() { closeGate('manual', 'Operator'); }
+
+function updateGateUI() {
+  const el    = document.getElementById('gate-val');
+  const isOpen = gateState === 'OPEN';
+  el.textContent = gateState;
+  el.className = 'gate-val mono ' + (isOpen ? 'open' : 'closed');
+  document.getElementById('btn-open').disabled  = isOpen;
+  document.getElementById('btn-close').disabled = !isOpen;
+}
+
+// ─── Log ───────────────────────────────────────────────────────────────────────
+function logEvent(method, who, action) {
+  const time = new Date().toTimeString().slice(0, 5);
+  const container = document.getElementById('log-entries');
+  // Remove placeholder
+  const ph = container.querySelector('.empty-hint');
+  if (ph) ph.remove();
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML =
+    `<span class="log-time">${time}</span>` +
+    `<span class="log-method">${method.toUpperCase().slice(0,6)}</span>` +
+    `<span class="log-who">${who}</span>` +
+    `<span class="log-act ${action.toLowerCase()}">${action}</span>`;
+  container.insertBefore(entry, container.firstChild);
+  while (container.children.length > 40) container.removeChild(container.lastChild);
+  document.getElementById('last-act').textContent = `Last: ${method} — ${who} — ${action} at ${time}`;
+}
+
+// ─── Plates ────────────────────────────────────────────────────────────────────
+function renderPlates() {
+  const list = document.getElementById('plate-tag-list');
+  list.innerHTML = approvedPlates.length ? '' : '<div class="empty-hint">No plates added.</div>';
+  approvedPlates.forEach((p, i) => {
+    const t = document.createElement('div'); t.className = 'tag';
+    t.innerHTML = `${p}<span class="tag-x" onclick="removePlate(${i})">×</span>`;
+    list.appendChild(t);
+  });
+}
+function addPlate() {
+  const inp = document.getElementById('plate-input');
+  const val = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (!val || approvedPlates.includes(val)) { inp.value = ''; return; }
+  approvedPlates.push(val); saveAll(); renderPlates(); inp.value = '';
+}
+function removePlate(i) { approvedPlates.splice(i, 1); saveAll(); renderPlates(); }
+document.getElementById('plate-input').addEventListener('keydown', e => { if (e.key === 'Enter') addPlate(); });
+
+// ─── Faces ─────────────────────────────────────────────────────────────────────
+function renderFaces() {
+  const list = document.getElementById('face-tag-list');
+  list.innerHTML = knownFaces.length ? '' : '<div class="empty-hint">No faces registered.</div>';
+  knownFaces.forEach((f, i) => {
+    const t = document.createElement('div'); t.className = 'tag';
+    t.innerHTML = `${f.label}<span class="tag-x" onclick="removeFace(${i})">×</span>`;
+    list.appendChild(t);
+  });
+}
+function removeFace(i) { knownFaces.splice(i, 1); rebuildMatcher(); saveAll(); renderFaces(); }
+function rebuildMatcher() {
+  if (!knownFaces.length) { faceMatcher = null; return; }
+  faceMatcher = new faceapi.FaceMatcher(
+    knownFaces.map(f => new faceapi.LabeledFaceDescriptors(f.label, f.descriptors)),
+    FACE_THRESHOLD
+  );
+}
+function openRegModal() {
+  document.getElementById('reg-modal').classList.add('show');
+  document.getElementById('reg-frame').classList.add('show');
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-msg').textContent = 'Position your face inside the frame. A clear, well-lit shot works best.';
+  regMode = true;
+}
+function closeRegModal() {
+  document.getElementById('reg-modal').classList.remove('show');
+  document.getElementById('reg-frame').classList.remove('show');
+  regMode = false;
+}
+async function captureRegistration() {
+  const name = document.getElementById('reg-name').value.trim().toUpperCase();
+  if (!name) { document.getElementById('reg-msg').textContent = 'Please enter a name first.'; return; }
+  const video = document.getElementById('video');
+  const det = await faceapi
+    .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
+    .withFaceLandmarks(true)
+    .withFaceDescriptor();
+  if (!det) {
+    document.getElementById('reg-msg').textContent = 'No face detected — move closer and try again.';
+    return;
+  }
+  const existing = knownFaces.find(f => f.label === name);
+  if (existing) {
+    existing.descriptors.push(det.descriptor);
+  } else {
+    knownFaces.push({ label: name, descriptors: [det.descriptor] });
+  }
+  rebuildMatcher(); saveAll(); renderFaces(); closeRegModal();
+  logEvent('REG', name, 'ENROLL');
+}
+
+// ─── NFC ───────────────────────────────────────────────────────────────────────
+function renderNFCTags() {
+  const list = document.getElementById('nfc-tag-list');
+  list.innerHTML = approvedNFCuids.length ? '' : '<div class="empty-hint">No chips added.</div>';
+  approvedNFCuids.forEach((uid, i) => {
+    const t = document.createElement('div'); t.className = 'tag';
+    t.innerHTML = `${uid.slice(0, 12)}…<span class="tag-x" onclick="removeNFC(${i})">×</span>`;
+    list.appendChild(t);
+  });
+}
+function removeNFC(i) { approvedNFCuids.splice(i, 1); saveAll(); renderNFCTags(); }
+
+async function initNFC() {
+  if (!('NDEFReader' in window)) {
+    document.getElementById('nfc-status').textContent = 'Not available — use Android + Chrome';
+    document.getElementById('badge-nfc').textContent = 'NFC — not supported';
+    document.getElementById('badge-nfc').className = 'badge nomatch';
+    document.getElementById('btn-add-nfc').disabled = true;
+    return;
+  }
+  try {
+    nfcReader = new NDEFReader();
+    await nfcReader.scan();
+    nfcScanning = true;
+    document.getElementById('nfc-status').textContent = 'Scanning — tap a chip to open/close';
+    document.getElementById('badge-nfc').textContent = 'NFC — scanning';
+    document.getElementById('badge-nfc').className = 'badge scan';
+
+    nfcReader.addEventListener('reading', ({ serialNumber }) => {
+      const uid = serialNumber.toUpperCase();
+      document.getElementById('det-nfc').textContent = uid.slice(0, 16);
+
+      if (nfcAddMode) {
+        if (!approvedNFCuids.includes(uid)) {
+          approvedNFCuids.push(uid); saveAll(); renderNFCTags();
+        }
+        document.getElementById('nfc-add-msg').textContent = 'Chip added: ' + uid.slice(0, 14);
+        document.getElementById('nfc-spinner').style.display = 'none';
+        setTimeout(closeNFCModal, 1500);
+        nfcAddMode = false;
+        return;
+      }
+
+      if (approvedNFCuids.includes(uid)) {
+        document.getElementById('badge-nfc').textContent = 'NFC — ' + uid.slice(0, 8) + ' MATCH';
+        document.getElementById('badge-nfc').className = 'badge match';
+        document.getElementById('det-nfc').className = 'det-val on mono';
+        if (!canAutoTrigger('nfc')) { return; }
+        if (gateState === 'OPEN') { closeGate('NFC', uid.slice(0, 8)); }
+        else { openGate('NFC', uid.slice(0, 8)); }
+        setTimeout(() => {
+          document.getElementById('badge-nfc').textContent = 'NFC — scanning';
+          document.getElementById('badge-nfc').className = 'badge scan';
+          document.getElementById('det-nfc').className = 'det-val mono';
+        }, 3000);
+      } else {
+        document.getElementById('badge-nfc').textContent = 'NFC — unknown chip';
+        document.getElementById('badge-nfc').className = 'badge nomatch';
+        setTimeout(() => {
+          document.getElementById('badge-nfc').textContent = 'NFC — scanning';
+          document.getElementById('badge-nfc').className = 'badge scan';
+        }, 2000);
+      }
+    });
+  } catch(err) {
+    document.getElementById('nfc-status').textContent = 'NFC error: ' + err.message;
+    document.getElementById('badge-nfc').textContent = 'NFC — error';
+  }
+}
+
+function startAddNFC() {
+  if (!nfcScanning) { alert('NFC is not available on this device.'); return; }
+  nfcAddMode = true;
+  document.getElementById('nfc-add-msg').textContent = 'Hold your NFC chip near the device...';
+  document.getElementById('nfc-spinner').style.display = 'block';
+  document.getElementById('nfc-add-modal').classList.add('show');
+}
+function closeNFCModal() {
+  nfcAddMode = false;
+  document.getElementById('nfc-add-modal').classList.remove('show');
+}
+
+// ─── Camera ────────────────────────────────────────────────────────────────────
+async function initCamera() {
+  const video = document.getElementById('video');
+  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+  video.srcObject = stream;
+  await new Promise(r => { video.onloadedmetadata = r; });
+  await video.play();
+  const canvas = document.getElementById('overlay');
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+}
+
+// ─── Face detection loop ───────────────────────────────────────────────────────
+async function faceLoop() {
+  if (faceDetecting) return;
+  faceDetecting = true;
+  const video  = document.getElementById('video');
+  const canvas = document.getElementById('overlay');
+  const ctx    = canvas.getContext('2d');
+  try {
+    const dets = await faceapi
+      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
+      .withFaceLandmarks(true)
+      .withFaceDescriptors();
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (dets.length > 0) {
+      const displaySize = { width: video.videoWidth, height: video.videoHeight };
+      const resized = faceapi.resizeResults(dets, displaySize);
+      let bestLabel = '—';
+      let bestConf  = '—';
+
+      for (const det of resized) {
+        const box = det.detection.box;
+        let label = 'Unknown';
+        let conf  = '';
+        let isKnown = false;
+
+        if (faceMatcher) {
+          const match = faceMatcher.findBestMatch(det.descriptor);
+          if (match.label !== 'unknown') {
+            label   = match.label;
+            conf    = ((1 - match.distance) * 100).toFixed(0) + '%';
+            isKnown = true;
+            if (bestLabel === '—') { bestLabel = label; bestConf = conf; }
+            if (canAutoTrigger('face')) openGate('face', label);
+          }
+        }
+
+        ctx.strokeStyle = isKnown ? '#4caf6e' : '#f0a83088';
+        ctx.lineWidth   = 2;
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+        if (label) {
+          ctx.fillStyle = isKnown ? '#4caf6e22' : '#1a191766';
+          ctx.fillRect(box.x, box.y - 18, box.width, 18);
+          ctx.fillStyle = isKnown ? '#4caf6e' : '#888';
+          ctx.font = '11px DM Mono, monospace';
+          ctx.fillText(label + (conf ? ' ' + conf : ''), box.x + 4, box.y - 4);
+        }
+      }
+
+      document.getElementById('det-face').textContent = bestLabel;
+      document.getElementById('det-conf').textContent = bestConf;
+      document.getElementById('det-face').className   = bestLabel !== '—' ? 'det-val on mono' : 'det-val mono';
+      document.getElementById('badge-face').textContent =
+        `FACE — ${dets.length} detected${bestLabel !== '—' ? ' · ' + bestLabel : ''}`;
+      document.getElementById('badge-face').className = bestLabel !== '—' ? 'badge match' : 'badge scan';
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('badge-face').textContent = 'FACE — no face';
+      document.getElementById('badge-face').className   = 'badge nomatch';
+      document.getElementById('det-face').textContent   = '—';
+      document.getElementById('det-conf').textContent   = '—';
+      document.getElementById('det-face').className     = 'det-val mono';
+    }
+  } catch(e) { console.error('face-loop', e); }
+  faceDetecting = false;
+}
+
+// ─── Plate OCR loop ────────────────────────────────────────────────────────────
+async function plateLoop() {
+  if (plateRunning || !tWorker) return;
+  plateRunning = true;
+  const video = document.getElementById('video');
+  try {
+    // Crop lower half of frame (where a plate appears on an approaching car)
+    const tmp = document.createElement('canvas');
+    tmp.width  = video.videoWidth;
+    tmp.height = Math.floor(video.videoHeight * 0.5);
+    tmp.getContext('2d').drawImage(video, 0, Math.floor(video.videoHeight * 0.5),
+      video.videoWidth, tmp.height, 0, 0, tmp.width, tmp.height);
+
+    const result = await tWorker.recognize(tmp);
+    const tokens = result.data.text
+      .toUpperCase()
+      .replace(/[^A-Z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter(t => t.length >= 4 && t.length <= 9);
+
+    const matched = tokens.find(t => approvedPlates.includes(t));
+
+    if (matched) {
+      document.getElementById('det-plate').textContent = matched;
+      document.getElementById('det-plate').className   = 'det-val on mono';
+      document.getElementById('badge-plate').textContent = 'PLATE — ' + matched + ' MATCH';
+      document.getElementById('badge-plate').className   = 'badge match';
+      if (canAutoTrigger('plate')) openGate('plate', matched);
+      setTimeout(() => {
+        document.getElementById('badge-plate').textContent = 'PLATE — scanning';
+        document.getElementById('badge-plate').className   = 'badge scan';
+        document.getElementById('det-plate').className     = 'det-val mono';
+      }, 5000);
+    } else {
+      document.getElementById('badge-plate').textContent = 'PLATE — scanning';
+      document.getElementById('badge-plate').className   = 'badge scan';
+      if (tokens.length) document.getElementById('det-plate').textContent = tokens[0];
+    }
+  } catch(e) { console.error('plate-loop', e); }
+  plateRunning = false;
+}
+
+// ─── Bootstrap ─────────────────────────────────────────────────────────────────
+async function init() {
+  loadAll();
+  renderPlates(); renderFaces(); renderNFCTags(); updateGateUI();
+
+  const msg = document.getElementById('load-msg');
+  const bar = document.getElementById('load-bar');
+
+  // Camera
+  msg.textContent = 'Starting camera...'; bar.style.width = '15%';
+  try { await initCamera(); }
+  catch(e) { msg.textContent = 'Camera error: ' + e.message; console.error(e); }
+
+  // Face-api models
+  msg.textContent = 'Loading face recognition models (this may take a moment)...'; bar.style.width = '30%';
+  try {
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODELS_URL),
+      faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODELS_URL),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODELS_URL),
+    ]);
+    rebuildMatcher();
+    document.getElementById('badge-face').textContent = 'FACE — ready';
+    document.getElementById('badge-face').className   = 'badge scan';
+  } catch(e) {
+    document.getElementById('badge-face').textContent = 'FACE — model error';
+    console.error('face-api', e);
+  }
+  bar.style.width = '65%';
+
+  // Tesseract
+  msg.textContent = 'Loading plate OCR engine...'; bar.style.width = '70%';
+  try {
+    tWorker = await Tesseract.createWorker('eng');
+    await tWorker.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' });
+    document.getElementById('badge-plate').textContent = 'PLATE — scanning';
+    document.getElementById('badge-plate').className   = 'badge scan';
+  } catch(e) {
+    document.getElementById('badge-plate').textContent = 'PLATE — OCR error';
+    console.error('tesseract', e);
+  }
+  bar.style.width = '88%';
+
+  // NFC
+  msg.textContent = 'Initializing NFC...';
+  await initNFC();
+  bar.style.width = '100%';
+
+  // Hide overlay
+  const ov = document.getElementById('loading-overlay');
+  ov.style.opacity = '0';
+  setTimeout(() => ov.style.display = 'none', 500);
+
+  // Start loops
+  setInterval(faceLoop, FACE_INTERVAL);
+  setInterval(plateLoop, PLATE_INTERVAL);
+}
+
+init();
+</script>
+</body>
+</html>
