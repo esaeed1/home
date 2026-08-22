@@ -4,12 +4,15 @@
   "description": "A simple project to display items from a Supabase database on a webpage.",
   "main": "script.js",
   "scripts": {
-    "start": "npx http-server public"
+    "start": "npx http-server public",
+    "sync-windows": "node scripts/sync-windows.mjs"
   },
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
 }

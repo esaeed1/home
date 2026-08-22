@@ -7,21 +7,59 @@ project (org "Need", ref `qgtcbwgjmpvslytxywju`). This was a deliberate
 choice, not a default -- see "The AMAZON project tradeoff" below before
 adding anything else to this project.
 
-If `windows.html` still shows "Failed to load items," the table/rows haven't
-been created in the dashboard yet. Run, in order, in that project's SQL
-Editor:
+**One-time schema setup** (only needed once, from scratch): run
+[`sql/create_windows_table.sql`](../sql/create_windows_table.sql) in that
+project's SQL Editor. `sql/seed_windows_from_marketplace.sql` and
+`sql/update_windows_final.sql` were the original one-time bootstrap (run
+2026-08-22) -- they're safe to leave alone, superseded by the automated sync
+below for anything ongoing.
 
-1. [`sql/create_windows_table.sql`](../sql/create_windows_table.sql)
-2. [`sql/seed_windows_from_marketplace.sql`](../sql/seed_windows_from_marketplace.sql)
-   -- loads the 5 windows that were listed on Facebook Marketplace as of
-   2026-08-22, with a generic (non-brand-specific) retail estimate for the
-   savings badge.
+**Ongoing sync (automated):** [`scripts/sync-windows.mjs`](../scripts/sync-windows.mjs)
+re-reads the seller's public Facebook Marketplace profile
+(`https://www.facebook.com/marketplace/profile/61577791847468`) and
+upserts every window listing into the table -- name, price, dimensions,
+quantity, a downloaded copy of the photo, a best-effort brand guess, and the
+listing description as `notes`. **No Facebook login or cookies are used or
+stored anywhere** -- the profile page and each listing page render publicly
+for a real (even logged-out) browser; only a plain HTTP request without a
+real browser engine gets blocked. Verified by hand and by repeated test runs
+on 2026-08-22.
 
-If you also have old rows in the original windows-only project
-(`pekbsvqrxxxusstbiuuv`), open `migrate-windows.html` in a browser once and
-click "Run Migration" -- but only if you haven't already run the seed script
-above for the same items, or you'll get duplicates. Delete that file once
-you've used it.
+It runs via [`.github/workflows/sync-windows.yml`](../.github/workflows/sync-windows.yml)
+every 2 days (`0 6 */2 * *` UTC), or on demand from the Actions tab
+("Run workflow"). It needs two repo secrets, which are **not** set yet --
+add them at *Settings → Secrets and variables → Actions → New repository
+secret*:
+
+| Secret | Value |
+|---|---|
+| `SUPABASE_URL` | `https://qgtcbwgjmpvslytxywju.supabase.co` |
+| `SUPABASE_ANON_KEY` | the anon key from `js/getItemsWindows.js` |
+
+(Neither is sensitive on its own -- the anon key is already public in the
+site's client-side JS -- keeping them as secrets just avoids hardcoding them
+into the workflow file.)
+
+To run it locally instead: `SUPABASE_URL=... SUPABASE_ANON_KEY=... npm run sync-windows`
+(needs `npx playwright install chromium` once first).
+
+**What it won't do:** delete rows for listings that get taken down (it only
+inserts/updates what it finds), or fill in `retail_price` (that needs an
+exact brand+model retail lookup, which varies too much to automate reliably
+-- do that one by hand when it matters for the savings badge). It also can't
+reliably tell apart the seller's own listings from Facebook's unrelated
+"today's picks" on the same page via DOM structure (Facebook's CSS classes
+are obfuscated/atomic, no stable container to scope by) -- it filters instead
+by content: a listing is treated as ours only if its title contains "window"
+or is a bare `WxH` dimension. If a future listing's title doesn't match
+either pattern, it'll be silently skipped -- check `window_type`/title
+conventions stay consistent, or loosen the `isWindowTitle()` check in the
+script.
+
+If you have old rows in the original windows-only project
+(`pekbsvqrxxxusstbiuuv`) that predate all of this, `migrate-windows.html` is
+a one-time tool to copy them across -- only run it if the sync script above
+hasn't already picked up the same items, or you'll get duplicates.
 
 ## The AMAZON project tradeoff
 
