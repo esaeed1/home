@@ -2,8 +2,12 @@ name: Sync windows from Marketplace
 
 on:
   schedule:
-    # Every 2 days at 06:00 UTC
-    - cron: '0 6 */2 * *'
+    # Daily at 1pm America/New_York. GitHub Actions cron only runs on fixed
+    # UTC, it doesn't track DST -- 17:00 UTC is 1pm during Eastern Daylight
+    # Time (roughly mid-March to early November). During Eastern Standard
+    # Time (winter), this will fire at 12pm instead of 1pm. If that matters,
+    # change to 18:00 for the winter half of the year and back for summer.
+    - cron: '0 17 * * *'
   workflow_dispatch: {}
 
 jobs:

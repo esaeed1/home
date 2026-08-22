@@ -18,18 +18,19 @@ below for anything ongoing.
 re-reads the seller's public Facebook Marketplace profile
 (`https://www.facebook.com/marketplace/profile/61577791847468`) and
 upserts every window listing into the table -- name, price, dimensions,
-quantity, a downloaded copy of the photo, a best-effort brand guess, and the
-listing description as `notes`. **No Facebook login or cookies are used or
-stored anywhere** -- the profile page and each listing page render publicly
-for a real (even logged-out) browser; only a plain HTTP request without a
-real browser engine gets blocked. Verified by hand and by repeated test runs
-on 2026-08-22.
+quantity, every photo the listing has (not just one, see "Multiple photos"
+below), a best-effort brand guess, and the listing description as `notes`.
+**No Facebook login or cookies are used or stored anywhere** -- the profile
+page and each listing page render publicly for a real (even logged-out)
+browser; only a plain HTTP request without a real browser engine gets
+blocked. Verified by hand and by repeated test runs on 2026-08-22.
 
 It runs via [`.github/workflows/sync-windows.yml`](../.github/workflows/sync-windows.yml)
-every 2 days (`0 6 */2 * *` UTC), or on demand from the Actions tab
-("Run workflow"). It needs two repo secrets, which are **not** set yet --
-add them at *Settings → Secrets and variables → Actions → New repository
-secret*:
+daily at 1pm America/New_York (`0 17 * * *` UTC -- see the comment in that
+file about the DST caveat, since GitHub cron doesn't track it automatically),
+or on demand from the Actions tab ("Run workflow"). It needs two repo
+secrets, which are **not** set yet -- add them at *Settings → Secrets and
+variables → Actions → New repository secret*:
 
 | Secret | Value |
 |---|---|
@@ -60,6 +61,21 @@ If you have old rows in the original windows-only project
 (`pekbsvqrxxxusstbiuuv`) that predate all of this, `migrate-windows.html` is
 a one-time tool to copy them across -- only run it if the sync script above
 hasn't already picked up the same items, or you'll get duplicates.
+
+**Multiple photos:** a listing can have several photos, all present in its
+page's DOM at once (Playwright doesn't need to click through the carousel).
+The sync script downloads every distinct one it finds and stores them in the
+`images` column (a Postgres `text[]`, added via
+[`sql/add_images_array.sql`](../sql/add_images_array.sql) -- run that once if
+upgrading from before this existed). `img` is kept in sync as `images[0]` for
+anything still reading the old single-photo column. On `windows.html`, each
+product card renders its own mini gallery -- prev/next arrows plus a
+"n/total" counter -- when a listing has more than one photo; cards with just
+one photo show it plain, no arrows. The image-type tag Facebook uses for a
+listing's primary photo (`t45.5328`) isn't consistent across every listing,
+so the script always trusts the page's `og:image` meta tag for the first
+photo (verified reliable on every listing tested) and only uses the
+`t45.5328` DOM scan to find *additional* gallery photos on top of it.
 
 ## The AMAZON project tradeoff
 
@@ -137,7 +153,9 @@ customers how much they're saving vs. retail.
 | `condition` | New, New in box, Open box, Used |
 | `price` | Your selling price |
 | `retail_price` | Typical retail/MSRP for that exact brand + model + size, looked up online -- when set, the site automatically shows a "Save $X (Y% off $Z retail)" badge on the card |
-| `quantity`, `upc`, `img`, `link`, `tags`, `notes` | Same convention as the `items` table |
+| `img` | First/primary photo -- kept for backward compatibility, mirrors `images[0]` |
+| `images` | `text[]` of every photo for the listing; drives the prev/next gallery on the card when there's more than one |
+| `quantity`, `upc`, `link`, `tags`, `notes` | Same convention as the `items` table |
 
 To show a savings badge on a listing, both `price` and `retail_price` need to
 be filled in -- `retail_price` is not looked up automatically, since that

@@ -149,11 +149,30 @@ async function main() {
             : fullPageText.slice(0, 500);
         const condition = /condition\s*\n?\s*new/i.test(description) ? 'New' : null;
 
-        const imageUrl = await itemPage.evaluate(() => {
-            const imgs = Array.from(document.querySelectorAll('img[src*="scontent"]'));
-            const candidate = imgs.find((img) => img.src.includes('t45.5328')) || imgs[0];
-            return candidate ? candidate.src : null;
-        }).catch(() => null);
+        // The "t45.5328" listing-photo type isn't universal -- some listings'
+        // primary photo is tagged as a different internal media type
+        // (t39.84726, t39.30808, ...) for reasons outside our control. The
+        // one thing that's always present and always correct is the page's
+        // og:image meta tag, so that's the reliable primary photo; the
+        // t45.5328 DOM scan (when present) supplies any *additional* gallery
+        // photos on top of it. Dedupe by media id (the number right before
+        // "_<fbid>_<random>_n.jpg" in the filename), since the same photo
+        // can appear multiple times at different crop sizes.
+        const mediaId = (url) => (url.match(/\/(\d+)_\d+_\d+_n\.(?:jpg|webp)/) || [])[1] || url;
+
+        const { ogImage, galleryImages } = await itemPage.evaluate(() => {
+            const og = document.querySelector('meta[property="og:image"]');
+            const imgs = Array.from(document.querySelectorAll('img[src*="scontent"][src*="t45.5328"]'));
+            return { ogImage: og ? og.content : null, galleryImages: imgs.map((i) => i.src) };
+        }).catch(() => ({ ogImage: null, galleryImages: [] }));
+
+        const byMediaId = new Map();
+        if (ogImage) byMediaId.set(mediaId(ogImage), ogImage);
+        for (const src of galleryImages) {
+            const key = mediaId(src);
+            if (!byMediaId.has(key)) byMediaId.set(key, src);
+        }
+        const imageUrls = [...byMediaId.values()];
 
         await itemPage.close();
 
@@ -162,21 +181,21 @@ async function main() {
         const brand = detectBrand(description) || detectBrand(title);
         const slug = slugFromTitle(title, id);
 
-        let imgPath = null;
-        if (imageUrl) {
+        const imgPaths = [];
+        for (let i = 0; i < imageUrls.length; i++) {
             try {
-                const res = await page.request.get(imageUrl);
+                const res = await page.request.get(imageUrls[i]);
                 if (res.ok()) {
                     const buf = await res.body();
-                    const filename = `${slug}.jpg`;
+                    const filename = imageUrls.length > 1 ? `${slug}-${i + 1}.jpg` : `${slug}.jpg`;
                     await fs.writeFile(path.join(IMG_DIR, filename), buf);
-                    imgPath = `img/windows/${filename}`;
-                    console.log('  saved photo ->', imgPath);
+                    imgPaths.push(`img/windows/${filename}`);
                 }
             } catch (err) {
                 console.warn('  photo download failed:', err.message);
             }
         }
+        if (imgPaths.length) console.log(`  saved ${imgPaths.length} photo(s) -> ${imgPaths.join(', ')}`);
 
         results.push({
             listing_id: id,
@@ -188,7 +207,8 @@ async function main() {
             height_in: dims.height_in,
             brand,
             condition,
-            img: imgPath,
+            img: imgPaths[0] || null,
+            images: imgPaths.length ? imgPaths : null,
             notes: description.slice(0, 500),
         });
     }
@@ -221,6 +241,7 @@ async function main() {
         if (r.brand) row.brand = r.brand;
         if (r.condition) row.condition = r.condition;
         if (r.img) row.img = r.img; // only overwrite if we actually got a fresh photo this run
+        if (r.images) row.images = r.images;
 
         if (existing) {
             const { error } = await supabase.from('windows').update(row).eq('id', existing.id);

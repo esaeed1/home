@@ -159,12 +159,25 @@ function displayItems(items) {
             </div>
         `;
 
+        // Gather every photo for this listing -- `images` (array) when present,
+        // falling back to the single `img` column for older/unenriched rows.
+        const galleryImages = Array.isArray(item.images) && item.images.length > 0
+            ? item.images
+            : [item.img || 'https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'];
+
         itemCard.innerHTML = `
             <div class="item-badge">${item.id}</div>
-            <img src="${item.img || 'https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'}"
-                 alt="${item.name}"
-                 class="item-image"
-                 onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'">
+            <div class="item-gallery" id="gallery-${item.id}">
+                <img src="${galleryImages[0]}"
+                     alt="${item.name}"
+                     class="item-image"
+                     onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'">
+                ${galleryImages.length > 1 ? `
+                    <button type="button" class="gallery-nav-btn gallery-nav-prev" data-dir="-1" aria-label="Previous photo">&#8249;</button>
+                    <button type="button" class="gallery-nav-btn gallery-nav-next" data-dir="1" aria-label="Next photo">&#8250;</button>
+                    <div class="gallery-count">1/${galleryImages.length}</div>
+                ` : ''}
+            </div>
             <div class="item-content">
                 <h3 class="item-title">${item.name}</h3>
                 <p class="item-description">
@@ -178,6 +191,24 @@ function displayItems(items) {
         `;
         
         itemGrid.appendChild(itemCard);
+
+        // Wire up the prev/next arrows for this card's photo gallery.
+        if (galleryImages.length > 1) {
+            let index = 0;
+            const galleryEl = itemCard.querySelector(`#gallery-${item.id}`);
+            const imgEl = galleryEl.querySelector('.item-image');
+            const counterEl = galleryEl.querySelector('.gallery-count');
+
+            galleryEl.querySelectorAll('.gallery-nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const dir = parseInt(btn.dataset.dir, 10);
+                    index = (index + dir + galleryImages.length) % galleryImages.length;
+                    imgEl.src = galleryImages[index];
+                    counterEl.textContent = `${index + 1}/${galleryImages.length}`;
+                });
+            });
+        }
     });
 }
 
