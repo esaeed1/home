@@ -1,7 +1,10 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const SUPABASE_URL = 'https://pekbsvqrxxxusstbiuuv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBla2JzdnFyeHh4dXNzdGJpdXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NDM3MDUsImV4cCI6MjA2NzQxOTcwNX0.YOjHD8GqAK4LUwGNOZpVJzeYSMsnIUA-tXh1NZVllGs';
+// Same Supabase project as items.html/admin.html -- windows now live in
+// their own `windows` table there instead of a separate project.
+// See sql/create_windows_table.sql and docs/database-setup.md.
+const SUPABASE_URL = 'https://ymyztsxdqmiklnsjurhq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlteXp0c3hkcW1pa2xuc2p1cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNDA3MzQsImV4cCI6MjA0OTgxNjczNH0.dGJ9LjCTGvGzUrSQfln_nxiIrxXNBy57Z98b8G7yZqk';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allItems = [];
@@ -10,9 +13,9 @@ async function fetchItems() {
     try {
         // Show loading state
         showLoading(true);
-        
+
         const { data, error } = await supabase
-            .from('items')
+            .from('windows')
             .select('*')
             .order('quantity', { ascending: false });
 
@@ -115,24 +118,36 @@ function displayItems(items) {
         };
         
         // Create tags HTML
-        const tagsHTML = item.tags ? 
+        const tagsHTML = item.tags ?
             item.tags.split(',').map(tag => `<span class="item-tag">${tag.trim()}</span>`).join('') : '';
-        
-        // Create price display from notes field
-        const priceHTML = item.notes ? 
+
+        // Price comes from the `price` column; fall back to the old `notes`
+        // field for any rows still carrying data from before the schema change.
+        const price = item.price != null ? item.price : (item.notes && !isNaN(parseFloat(item.notes)) ? parseFloat(item.notes) : null);
+        const retail = item.retail_price != null ? parseFloat(item.retail_price) : null;
+        const savings = (price != null && retail != null && retail > price) ? (retail - price) : null;
+        const savingsPct = savings != null ? Math.round((savings / retail) * 100) : null;
+
+        const priceHTML = price != null ?
             `<div class="price-display">
                 <div class="price-label">PRICE</div>
-                <div class="price-value">$${item.notes}</div>
+                <div class="price-value">$${price}</div>
+                ${savings != null ? `<div class="savings-badge">Save $${savings.toFixed(0)} (${savingsPct}% off $${retail} retail)</div>` : ''}
             </div>` : '';
-        
+
         // Create enhanced quantity display
-        const quantityDisplay = item.quantity && item.quantity > 0 ? 
-            `<div class="quantity-display">${item.quantity} Available</div>` : 
+        const quantityDisplay = item.quantity && item.quantity > 0 ?
+            `<div class="quantity-display">${item.quantity} Available</div>` :
             `<div class="quantity-display" style="background: linear-gradient(135deg, #dc3545, #c82333);">Out of Stock</div>`;
-        
+
         // Create info section
+        const dims = (item.width_in && item.height_in) ? `${item.width_in}" &times; ${item.height_in}"` : null;
         const infoHTML = `
             <div class="item-info">
+                ${item.brand ? `<div class="info-item"><div class="info-label">Brand</div><div class="info-value">${item.brand}</div></div>` : ''}
+                ${item.model ? `<div class="info-item"><div class="info-label">Model</div><div class="info-value">${item.model}</div></div>` : ''}
+                ${dims ? `<div class="info-item"><div class="info-label">Size</div><div class="info-value">${dims}</div></div>` : ''}
+                ${item.frame_material ? `<div class="info-item"><div class="info-label">Frame</div><div class="info-value">${item.frame_material}</div></div>` : ''}
                 <div class="info-item">
                     <div class="info-label">UPC</div>
                     <div class="info-value">${item.upc || 'N/A'}</div>
@@ -143,17 +158,17 @@ function displayItems(items) {
                 </div>
             </div>
         `;
-        
+
         itemCard.innerHTML = `
             <div class="item-badge">${item.id}</div>
-            <img src="${item.img || 'https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'}" 
-                 alt="${item.name}" 
+            <img src="${item.img || 'https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'}"
+                 alt="${item.name}"
                  class="item-image"
                  onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=Pro+Windows'">
             <div class="item-content">
                 <h3 class="item-title">${item.name}</h3>
                 <p class="item-description">
-                    ${item.description || 'Premium Windows solution with advanced features and optimal performance.'}
+                    ${item.description || (item.window_type ? `${item.window_type} window, ${item.condition || 'new'} condition.` : 'In-stock replacement window.')}
                 </p>
                 ${quantityDisplay}
                 ${infoHTML}

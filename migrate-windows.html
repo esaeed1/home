@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>One-Time Windows Data Migration</title>
+<style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; color: #222; }
+    button { background: #ff6a1a; color: #fff; border: none; padding: 12px 22px; font-size: 1em; border-radius: 6px; cursor: pointer; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #log { white-space: pre-wrap; background: #f4f4f4; border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-top: 20px; font-family: monospace; font-size: 0.9em; max-height: 400px; overflow-y: auto; }
+    .warn { color: #a15c00; }
+</style>
+</head>
+<body>
+<h1>One-Time Windows Data Migration</h1>
+<p>Copies every row from the old windows-only database into the new <code>windows</code> table in the main (Amazon) database.</p>
+<p class="warn">Run this once, after you've created the <code>windows</code> table with <code>sql/create_windows_table.sql</code>. Running it twice will duplicate every row.</p>
+<button id="run-btn">Run Migration</button>
+<div id="log"></div>
+
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // Old, windows-only project (source)
+    const OLD_URL = 'https://pekbsvqrxxxusstbiuuv.supabase.co';
+    const OLD_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBla2JzdnFyeHh4dXNzdGJpdXV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NDM3MDUsImV4cCI6MjA2NzQxOTcwNX0.YOjHD8GqAK4LUwGNOZpVJzeYSMsnIUA-tXh1NZVllGs';
+
+    // Main "amazon" project, new `windows` table (destination)
+    const NEW_URL = 'https://ymyztsxdqmiklnsjurhq.supabase.co';
+    const NEW_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlteXp0c3hkcW1pa2xuc2p1cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNDA3MzQsImV4cCI6MjA0OTgxNjczNH0.dGJ9LjCTGvGzUrSQfln_nxiIrxXNBy57Z98b8G7yZqk';
+
+    const oldClient = createClient(OLD_URL, OLD_KEY);
+    const newClient = createClient(NEW_URL, NEW_KEY);
+
+    const logEl = document.getElementById('log');
+    const log = (msg) => { logEl.textContent += msg + '\n'; logEl.scrollTop = logEl.scrollHeight; };
+
+    document.getElementById('run-btn').addEventListener('click', async (e) => {
+        e.target.disabled = true;
+        log('Reading rows from the old windows database...');
+
+        const { data: oldRows, error: readErr } = await oldClient.from('items').select('*');
+        if (readErr) {
+            log('ERROR reading old data: ' + readErr.message);
+            e.target.disabled = false;
+            return;
+        }
+        log(`Found ${oldRows.length} row(s).`);
+
+        if (oldRows.length === 0) {
+            log('Nothing to migrate.');
+            return;
+        }
+
+        // Map old `items`-shaped rows onto the new `windows` table's columns.
+        // Old table only had generic item fields, so brand/model/dimensions/
+        // retail_price start blank -- fill those in by hand afterward.
+        const mapped = oldRows.map(row => ({
+            name: row.name,
+            upc: row.upc,
+            quantity: row.quantity,
+            img: row.img,
+            link: row.link,
+            tags: row.tags,
+            notes: row.notes,
+            price: row.notes && !isNaN(parseFloat(row.notes)) ? parseFloat(row.notes) : null,
+        }));
+
+        log('Inserting into the new windows table...');
+        const { error: writeErr } = await newClient.from('windows').insert(mapped);
+
+        if (writeErr) {
+            log('ERROR writing new data: ' + writeErr.message);
+            log('(Did you run sql/create_windows_table.sql first?)');
+            e.target.disabled = false;
+            return;
+        }
+
+        log(`Done. Migrated ${mapped.length} row(s) into public.windows.`);
+        log('You can now delete this file (migrate-windows.html) -- it is a one-time tool.');
+    });
+</script>
+</body>
+</html>
