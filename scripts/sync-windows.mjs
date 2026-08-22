@@ -176,20 +176,22 @@ async function main() {
             : fullPageText.slice(0, 500);
         const condition = /condition\s*\n?\s*new/i.test(description) ? 'New' : null;
 
-        // The "t45.5328" listing-photo type isn't universal -- some listings'
-        // primary photo is tagged as a different internal media type
-        // (t39.84726, t39.30808, ...) for reasons outside our control. The
-        // one thing that's always present and always correct is the page's
-        // og:image meta tag, so that's the reliable primary photo; the
-        // t45.5328 DOM scan (when present) supplies any *additional* gallery
-        // photos on top of it. Dedupe by media id (the number right before
-        // "_<fbid>_<random>_n.jpg" in the filename), since the same photo
-        // can appear multiple times at different crop sizes.
+        // Below the actual listing, Facebook renders a "related/recommended"
+        // section full of OTHER sellers' photos -- and those can use the
+        // exact same internal media type (t45.5328) as this listing's own
+        // photos, so filtering by that type alone isn't safe (verified by
+        // hand: a stranger's gaming PC listing, a mattress ad, and a
+        // locksmith ad all rendered as t45.5328 on other items' pages). The
+        // reliable signal is the alt text Facebook itself sets only on this
+        // listing's own gallery images: exactly "Product photo of {title}".
+        // Dedupe by media id (the number right before "_<fbid>_<random>_n.jpg"
+        // in the filename), since the same photo can appear multiple times
+        // at different crop sizes.
         const mediaId = (url) => (url.match(/\/(\d+)_\d+_\d+_n\.(?:jpg|webp)/) || [])[1] || url;
 
         const { ogImage, galleryImages } = await itemPage.evaluate(() => {
             const og = document.querySelector('meta[property="og:image"]');
-            const imgs = Array.from(document.querySelectorAll('img[src*="scontent"][src*="t45.5328"]'));
+            const imgs = Array.from(document.querySelectorAll('img[alt^="Product photo of "]'));
             return { ogImage: og ? og.content : null, galleryImages: imgs.map((i) => i.src) };
         }).catch(() => ({ ogImage: null, galleryImages: [] }));
 
