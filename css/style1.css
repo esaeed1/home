@@ -46,24 +46,32 @@ footer {
     width: 100%;
 }
 
-.site-credit {
+.saeed-credit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 0.85em;
     color: rgba(255, 255, 255, 0.6);
 }
 
-.site-credit a {
-    color: inherit;
-    text-decoration: none;
+.saeed-credit a {
+    display: inline-flex;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.15s ease;
 }
 
-.site-credit a:hover {
-    text-decoration: underline;
+.saeed-credit a:hover {
+    opacity: 0.8;
 }
 
-.saeed-wordmark {
-    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-    font-style: italic;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.85);
+.saeed-credit-logo {
+    height: 22px;
+    width: auto;
+    display: block;
 }
 
 /* Hero Section */

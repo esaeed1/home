@@ -8,7 +8,6 @@
     <meta name="description" content="In-stock replacement windows by size, available for pickup in Detroit at a fraction of retail price.">
     <link rel="stylesheet" href="css/style1.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -663,27 +662,32 @@
             font-size: 0.8rem;
         }
 
-        .site-credit {
-            color: #808090;
-            font-weight: 400;
+        .saeed-credit {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 0.6rem;
             font-size: 0.8rem;
-            margin-top: 0.4rem;
+            color: #808090;
         }
 
-        .site-credit a {
-            color: inherit;
-            text-decoration: none;
+        .saeed-credit a {
+            display: inline-flex;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.15s ease;
         }
 
-        .site-credit a:hover {
-            text-decoration: underline;
+        .saeed-credit a:hover {
+            opacity: 0.8;
         }
 
-        .saeed-wordmark {
-            font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-            font-style: italic;
-            font-weight: 600;
-            color: #c8c8e0;
+        .saeed-credit-logo {
+            height: 22px;
+            width: auto;
+            display: block;
         }
 
         /* Loading Animation */
