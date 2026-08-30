@@ -46,6 +46,26 @@ footer {
     width: 100%;
 }
 
+.site-credit {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.site-credit a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.site-credit a:hover {
+    text-decoration: underline;
+}
+
+.saeed-wordmark {
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+}
+
 /* Hero Section */
 .hero {
     background: linear-gradient(to right, #0A74DA, #4B8DF8);
